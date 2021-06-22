@@ -1,0 +1,421 @@
+import { useState } from 'react';
+import Swal from 'sweetalert2';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+
+const PengirimanPesananHelper = () => {
+    const currentUser = useSelector(state => state.currentUser);
+    const baseUrl = process.env.REACT_APP_LARAVEL_URL;
+    const fields = [
+        {
+            key: 'id',
+            label: 'No',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'kode_pengiriman',
+            label: 'Kode Pegiriman',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'name',
+            label: 'Nama',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'nomorhp',
+            label: 'Nomor HP',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'alamat',
+            label: 'Alamat',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'nama_cabang',
+            label: 'Cabang',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'ekspedisi',
+            label: 'Ekspedisi',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'ongkir',
+            label: 'Ongkir',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'keterangan',
+            label: 'Keterangan',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'tanggal_pengiriman',
+            label: 'Tanggal Pengiriman',
+            _style: { textAlign: 'center' },
+        },
+        {
+            key: 'show_details',
+            label: '',
+            _style: { width: '1%' },
+            sorter: false,
+            filter: false
+        }
+    ];
+
+    const [success, setSuccess] = useState(false);
+    const [info, setInfo] = useState(false);
+    const [dataPengirimanPesanan, setDataPengirimanPesanan] = useState([]);
+    const [loadDataPengirimanPesanan, setLoadDatapengirimanPesanan] = useState(true);
+    const [currentDataPengirimanPesanan, setCurrentDataPengirimanPesanan] = useState({});
+    const [loadCurrentDataPengirimanPesanan, setLoadCurrentDataPengirimanPesanan] = useState(true);
+    const [dataEkspedisi, setDataEkspedisi] = useState([]);
+    const [loadDataEkspedisi, setLoadDataEkspedisi] = useState(true);
+    const [dataCabang, setDataCabang] = useState([]);
+    const [loadDataCabang, setLoadDataCabang] = useState(true);
+    const [input, setInput] = useState({
+        id_marketing: '',
+        user_id: '',
+        tanggal_pengiriman: '',
+        alamat: '',
+        ongkir: '0',
+        id_ekspedisi: '',
+        id_cabang: '',
+        keterangan: ''
+    });
+    const [details, setDetails] = useState([]);
+
+    const toggleDetails = (index) => {
+        const position = details.indexOf(index)
+        let newDetails = details.slice()
+        if (position !== -1) {
+            newDetails.splice(position, 1)
+        } else {
+            newDetails = [...details, index]
+        }
+        setDetails(newDetails)
+    }
+
+    const changeHandler = e => {
+        setInput({
+            ...input, [e.target.name]: e.target.value
+        });
+    }
+
+    const submitHandler = action => {
+        if(action === 'update') {
+            updateDataPengirimanPesanan(currentDataPengirimanPesanan.id_pesanan_penjualan);
+        }
+    }
+
+    const closeModalHandler = action => {
+        if(action === 'submit' || action === 'update') {
+            setSuccess(!success);
+        } else if(action === 'view') {
+            setInfo(!info);
+        }
+
+        setInput({
+            id_marketing: '',
+            user_id: '',
+            tanggal_pengiriman: '',
+            alamat: '',
+            ongkir: '',
+            id_ekspedisi: '',
+            id_cabang: '',
+            keterangan: ''    
+        });
+    }
+
+    const getDataPengirimanPesanan = async () => {
+        await axios.get(`${baseUrl}/pengiriman-pesanan`, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            setDataPengirimanPesanan(response.data.result);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+        setLoadDatapengirimanPesanan(false);
+    }
+
+    const getDataPengirimanPesananById = async (id, actionModal) => {
+        await axios.get(`${baseUrl}/pengiriman-pesanan/${id}`, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            const result = response.data.result
+            setCurrentDataPengirimanPesanan(result);
+
+            if(actionModal === 'update') {
+                setInput({
+                    id_marketing: result.id_marketing,
+                    user_id: result.user_id,
+                    tanggal_pengiriman: result.tanggal_pengiriman,
+                    alamat: result.alamat,
+                    ongkir: result.ongkir,
+                    id_ekspedisi: result.id_ekspedisi,
+                    id_cabang: result.id_cabang,
+                    keterangan: result.keterangan,
+                });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+        setLoadCurrentDataPengirimanPesanan(false);
+
+        if(actionModal === 'update') {
+            setSuccess(!success);
+        } else if(actionModal === 'view') {
+            setInfo(!info);
+        } else if(actionModal === 'delete') {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteDataPengirimanPesanan(id);
+                }
+            })
+        }
+    }
+
+    const getDataEkspedisi = async () => {
+        await axios.get(`${baseUrl}/ekspedisi`, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            setDataEkspedisi(response.data.result);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+        setLoadDataEkspedisi(false);
+    }
+
+    const postDataFakturPenjualan = async payload => {
+        let message = '';
+        if(payload.tanggal_pengiriman == null) message = 'Barang belum dikirimkan!';
+
+        if(message != '') {
+            Swal.fire(
+                'Gagal',
+                message,
+                'error'
+            );
+        } else {
+            await axios.post(`${baseUrl}/faktur-penjualan`, {
+                id_pesanan_penjualan: payload.id_pesanan_penjualan,
+                id_marketing: currentUser.id,
+                user_id: payload.user_id,
+            },
+            {
+                headers: {
+                    'Accept': 'Application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+                } 
+            })
+            .then(response => {
+                Swal.fire(
+                    'Berhasil',
+                    response.data.message,
+                    'success'
+                );
+    
+                getDataPengirimanPesanan();
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Gagal',
+                    error.message,
+                    'error'
+                );
+            });
+        }
+    }
+
+    const updateDataPengirimanPesanan = async id_pesanan_penjualan => {
+        let message = '';
+        if(input.tanggal_pengiriman == null) message = 'Tanggal pengiriman harus diisi!';
+        else if(input.id_ekspedisi == null) message = 'Ekspedisi harus dipilih salah satu!';
+        
+        if(message != '') {
+            Swal.fire(
+                'Gagal',
+                message,
+                'error'
+            );
+        } else {
+            let ongkir = 0;
+            let total_harga = 0;
+            if(input.ongkir != '' || input.ongkir != 0) {
+                if(input.ongkir.indexOf('.') !== -1 || input.ongkir.indexOf(',') !== -1) {
+                    ongkir = input.ongkir.replace(/[^0-9]+/g, "");
+                    total_harga = parseInt(currentDataPengirimanPesanan.pesanan_penjualan.total_harga) + parseInt(ongkir);
+                } else {
+                    ongkir = input.ongkir;
+                    total_harga = parseInt(currentDataPengirimanPesanan.pesanan_penjualan.total_harga) + parseInt(ongkir);
+                }
+            }
+            console.log(total_harga);
+
+            await axios.put(`${baseUrl}/pengiriman-pesanan/${id_pesanan_penjualan}`, {
+                tanggal_pengiriman: input.tanggal_pengiriman,
+                alamat: input.alamat == null ? currentDataPengirimanPesanan.user.alamat : input.alamat,
+                ongkir: ongkir,
+                id_ekspedisi: input.id_ekspedisi,
+                keterangan: input.keterangan    
+            },
+            {
+                headers: {
+                    'Accept': 'Application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+                }
+            })
+            .then(response => {
+                Swal.fire(
+                    'Berhasil',
+                    response.data.message,
+                    'success'
+                );
+    
+                getDataPengirimanPesanan();
+
+                if(total_harga > 0) {
+                    updatePesananPenjualan(id_pesanan_penjualan, total_harga);
+                }
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Gagal',
+                    error.message,
+                    'error'
+                );
+            });
+    
+            closeModalHandler('update');
+        }
+    }
+
+    const updatePesananPenjualan = async (id_pesanan_penjualan, total_harga) => {
+        await axios.put(`${baseUrl}/pesanan-penjualan/${id_pesanan_penjualan}`, {
+            total_harga: total_harga
+        },
+        {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            console.log('success');
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+    const deleteDataPengirimanPesanan = async id => {
+        await axios.put(`${baseUrl}/pengiriman-pesanan/${id}`, {
+            tanggal_pengiriman: '',
+            alamat: '',
+            ongkir: 0,
+            id_ekspedisi: '',
+            keterangan: ''  
+        },
+        {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            Swal.fire(
+                'Berhasil',
+                'Data berhasil dihapus',
+                'success'
+            );
+
+            getDataPengirimanPesanan();
+        })
+        .catch(error => {
+            Swal.fire(
+                'Gagal',
+                error.message,
+                'error'
+            );
+        });
+    }
+
+    const deleteDataFakturPenjualan = async no_bukti => {
+        await axios.delete(`${baseUrl}/faktur-penjualan/${no_bukti}`, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            Swal.fire(
+                'Berhasil',
+                'Data berhasil dihapus',
+                'success'
+            );
+
+            getDataPengirimanPesanan();
+        })
+        .catch(error => {
+            Swal.fire(
+                'Gagal',
+                error.message,
+                'error'
+            );
+        });
+    }
+
+    return {
+        fields,
+        success,
+        info,
+        dataPengirimanPesanan,
+        loadDataPengirimanPesanan,
+        currentDataPengirimanPesanan,
+        loadCurrentDataPengirimanPesanan,
+        dataEkspedisi,
+        loadDataEkspedisi,
+        input,
+        details,
+        toggleDetails,
+        changeHandler,
+        submitHandler,
+        closeModalHandler,
+        getDataPengirimanPesanan,
+        getDataPengirimanPesananById,
+        getDataEkspedisi,
+        postDataFakturPenjualan,
+        deleteDataFakturPenjualan
+    }
+}
+
+export default PengirimanPesananHelper;
