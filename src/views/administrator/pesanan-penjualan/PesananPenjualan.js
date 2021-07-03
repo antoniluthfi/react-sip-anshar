@@ -22,15 +22,21 @@ import {
     CModalFooter,
     CCollapse,
     CSelect,
-    CTextarea
+    CTextarea,
 } from '@coreui/react';  
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { 
+    faMinus,
+    faPlus,
+    faTrash
+} from '@fortawesome/free-solid-svg-icons'
+
 
 const PesananPenjualan = () => {
     const {
         fields,
         success, setSuccess,
         info,
-        currentUser,
         dataPesananPenjualan,
         loadDataPesananPenjualan,
         currentPesananPenjualan,
@@ -40,17 +46,13 @@ const PesananPenjualan = () => {
         dataPelanggan,
         currentPelanggan, setCurrentPelanggan,
         input, setInput,
-        currentNamaBarang, setCurrentNamaBarang,
-        dataBarang,
-        currentHargaBarang, 
+        inputBarang, setInputBarang,
+        dataBarang, setDataBarang,
         dataSyaratPembayaran,
         loadDataSyaratPembayaran,
-        diskonLangsungVisibility,
-        diskonPersenVisibility,
         buttonSubmitName,
         modalTitle,
         details,
-        setRolePelanggan,
         toggleDetails,
         closeModalHandler,
         changeHandler,
@@ -58,22 +60,26 @@ const PesananPenjualan = () => {
         getCurrentUser,
         getDataPesananPenjualanById,
         getDataStokBarang,
-        getDataStokBarangById,
         getDataCabang,
         getDataPelanggan,
         postDataPengirimanPesanan,
         postDataFakturPenjualan,
         getSyaratPembayaran,
         deletePengirimanPesanan,
-        deleteDataFakturPenjualan
+        deleteDataFakturPenjualan,
+        addInput,
+        removeInput
     } = DataPesananPenjualanHelper();
 
     useEffect(() => {
         getCurrentUser();
-        getDataStokBarang();
         getDataCabang();
         getDataPelanggan();
         getSyaratPembayaran();
+
+        return () => {
+            setDataBarang([]);
+        }
     }, [])
 
     return (
@@ -103,18 +109,16 @@ const PesananPenjualan = () => {
                                 scopedSlots = {{
                                     'id':
                                     ((item, i) => <td className="text-center">{i + 1}</td>),
+                                    'kode_pesanan':
+                                    ((item, i) => <td className="text-center">{item.kode_pesanan}</td>),
                                     'name':
                                     (item => <td className="text-center">{item.pelanggan.name}</td>),
                                     'email':
                                     (item => <td className="text-center">{item.pelanggan.email}</td>),
-                                    'nama_barang':
-                                    (item => <td className="text-center">{item.barang.nama_barang}</td>),
-                                    'kuantitas':
-                                    (item => <td className="text-center">{item.kuantitas}</td>),
                                     'syarat_pembayaran':
                                     (item => <td className="text-center">{item.syarat_pembayaran.nama}</td>),
                                     'cabang':
-                                    (item => <td className="text-center">{item.stok_cabang}</td>),
+                                    (item => <td className="text-center">{item.cabang.nama_cabang}</td>),
                                     'show_details':
                                     (item, index)=>{
                                         return (
@@ -136,37 +140,39 @@ const PesananPenjualan = () => {
                                         return (
                                         <CCollapse show={details.includes(index)}>
                                             <CCardBody>
-                                                <CButton size="sm" color="info" onClick={() => getDataPesananPenjualanById(item.id, 'view')}>
+                                                <CButton size="sm" color="info" onClick={() => getDataPesananPenjualanById(item.kode_pesanan, 'view')}>
                                                     View Details
                                                 </CButton>
-                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataPesananPenjualanById(item.id, 'update')}>
+                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataPesananPenjualanById(item.kode_pesanan, 'update')}>
                                                     Update
                                                 </CButton>
-                                                {item.pengiriman_pesanan == null ? 
+                                                {!item.faktur_penjualan ? 
+                                                    !item.pengiriman_pesanan ? 
                                                     <CButton size="sm" color="warning" className="ml-1" onClick={() => postDataPengirimanPesanan(item)}>
                                                         Proses Ke Pengiriman Pesanan
                                                     </CButton> :
-                                                    <CButton size="sm" color="danger" className="ml-1" onClick={() => deletePengirimanPesanan(item.pengiriman_pesanan.id_pesanan_penjualan)}>
+                                                    <CButton size="sm" color="danger" className="ml-1" onClick={() => deletePengirimanPesanan(item.pengiriman_pesanan.kode_pesanan)}>
                                                         Hapus Pengiriman Pesanan
                                                     </CButton>
-                                                }
-                                                {console.log(item.faktur_penjualan)}
-                                                {item.faktur_penjualan == null ?
+                                                : null}
+                                                
+                                                {!item.pengiriman_pesanan ?
+                                                    !item.faktur_penjualan ?
                                                     <CButton size="sm" color="warning" className="ml-1" onClick={() => postDataFakturPenjualan(item)}>
                                                         Buat Faktur Penjualan
                                                     </CButton> :
-                                                    <CButton size="sm" color="danger" className="ml-1" onClick={() => deleteDataFakturPenjualan(item.faktur_penjualan.no_bukti)}>
+                                                    <CButton size="sm" color="danger" className="ml-1" onClick={() => deleteDataFakturPenjualan(item.faktur_penjualan.no_faktur)}>
                                                         Hapus Faktur Penjualan
-                                                    </CButton>                                                
-                                                }
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataPesananPenjualanById(item.id, 'delete')}>
+                                                    </CButton>
+                                                : null}
+                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataPesananPenjualanById(item.kode_pesanan, 'delete')}>
                                                     Delete
                                                 </CButton>  
-                                                <a href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/transaksi/pesanan-penjualan/id/${item.id}`} target="_blank">
+                                                <a href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/transaksi/pesanan-penjualan/id/${item.kode_pesanan}`} target="_blank" rel="noreferrer">
                                                     <CButton size="sm" color="warning" className="ml-1">
                                                         Cetak Laporan
                                                     </CButton>
-                                                </a>       
+                                                </a>
                                             </CCardBody>
                                         </CCollapse>
                                         )
@@ -184,6 +190,7 @@ const PesananPenjualan = () => {
                 onClose={() => closeModalHandler(buttonSubmitName.toLowerCase())}
                 color="success"
                 closeOnBackdrop={false}
+                size="lg"
             >
                 <CModalHeader closeButton>
                     <CModalTitle>{modalTitle}</CModalTitle>
@@ -191,7 +198,7 @@ const PesananPenjualan = () => {
                 <CModalBody>
                     <CForm action="" method="post">
                         <CRow>
-                            <CCol xs="12" md="12">
+                            <CCol xs="12" md="6">
                                 <CFormGroup>
                                     <CLabel htmlFor="input-pelanggan">Nama Pelanggan</CLabel>
                                     <Autocomplete
@@ -203,18 +210,23 @@ const PesananPenjualan = () => {
                                         value={{ name: currentPelanggan.name }}
                                         onChange={(event, values) => {
                                             if(values !== null) {
+                                                console.log(values);
                                                 setCurrentPelanggan({
-                                                    ...currentPelanggan, name: values.name
+                                                    ...currentPelanggan, 
+                                                    name: values.name,
+                                                    hak_akses: values.hak_akses
                                                 });
 
                                                 setInput({
                                                     ...input, user_id: values.id
                                                 });
 
-                                                setRolePelanggan(values.hak_akses);
+                                                if(input.id_cabang) {
+                                                    getDataStokBarang(input.id_cabang);
+                                                }
                                             } else {
                                                 setCurrentPelanggan({
-                                                    ...currentPelanggan, name: ''
+                                                    ...currentPelanggan, name: '', hak_akses: ''
                                                 });
 
                                                 setInput({
@@ -228,106 +240,136 @@ const PesananPenjualan = () => {
                                     />                                
                                 </CFormGroup>
                             </CCol>
-                        </CRow>
 
-                        <CRow>
-                            <CCol xs="12" md="12">
-                                <CFormGroup>
-                                    <CLabel htmlFor="input-barang">Nama Barang</CLabel>
-                                    <Autocomplete
-                                        id="input-barang"
-                                        clearOnEscape={true}
-                                        options={dataBarang}
-                                        getOptionSelected={(option, value) => option.id === value.id}
-                                        getOptionLabel={option => option.nama_barang}
-                                        value={{ nama_barang: currentNamaBarang.nama_barang }}
-                                        onChange={(event, values) => {
-                                            if(values !== null) {
-                                                setCurrentNamaBarang({
-                                                    ...currentNamaBarang, nama_barang: values.nama_barang
-                                                });
-
-                                                setInput({
-                                                    ...input, id_barang: values.id
-                                                });
-
-                                                if(currentUser.hak_akses !== 'administrator' && input.user_id != '') {
-                                                    getDataStokBarangById(values.id);
-                                                }
-                                            } else {
-                                                setCurrentNamaBarang({
-                                                    ...currentNamaBarang, nama_barang: ''
-                                                });
-
-                                                setInput({
-                                                    ...input, id_barang: ''
-                                                });
-                                            }                
-                                        }}
-                                        renderInput={(params) => 
-                                            <TextField {...params} />
-                                        }
-                                    />                                
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-
-                        <CRow>
                             <CCol xs="12" md="6">
                                 <CFormGroup>
-                                    <CLabel htmlFor="kuantitas">Jumlah</CLabel>
-                                    <CInput type="number" min="1" id="kuantitas" name="kuantitas" value={input.kuantitas} onChange={changeHandler} placeholder="Masukkan Jumlah Barang" />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" lg="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="satuan">Satuan</CLabel>
-                                    <CSelect custom name="satuan" id="satuan" value={input.satuan} onChange={changeHandler} >
-                                        <option value="pcs">PCS</option>
-                                        <option value="pack">PACK</option>
-                                    </CSelect>
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-
-                        <CRow>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="stok-cabang">Pilih Cabang</CLabel>
-                                    <CSelect custom name="stok_cabang" id="stok-cabang" value={input.stok_cabang} onChange={changeHandler} >
+                                    <CLabel htmlFor="id_cabang">Pilih Cabang</CLabel>
+                                    <CSelect 
+                                        custom 
+                                        name="id_cabang" 
+                                        id="id_cabang" 
+                                        value={input.id_cabang} 
+                                        onChange={(e) => {
+                                            changeHandler(e);
+                                            
+                                            if(currentPelanggan.hak_akses) {
+                                                getDataStokBarang(e.target.value);
+                                            }
+                                        }} 
+                                    >
                                         {
                                             loadDataCabang ? <option value="">Pilih Salah Satu</option> :
                                             <>
                                                 <option value="">Pilih Salah Satu</option>
                                                 {dataCabang.map(item => (
-                                                    <option key={item.id} value={item.nama_cabang}>{item.nama_cabang}</option>
+                                                    <option key={item.id} value={item.id}>{item.nama_cabang}</option>
                                                 ))}
                                             </>
                                         }
                                     </CSelect>
                                 </CFormGroup>
                             </CCol>
-                            <CCol xs="12" md="6">
-                                {currentUser.hak_akses === 'administrator' ? 
-                                    <CFormGroup>
-                                        <CLabel htmlFor="role">Role</CLabel>
-                                        <CSelect custom name="role" id="role" value={input.role} onChange={changeHandler} >
-                                            <option value="">Pilih Salah Satu</option>
-                                            <option value="user">Reseller</option>
-                                            <option value="reseller">User</option>
-                                        </CSelect>
-                                    </CFormGroup> : null                             
-                                }
-                            </CCol>
                         </CRow>
 
+                        <table className="table table-bordered table-sm">
+                            <thead>
+                                <tr className="text-center">
+                                    <th width="5%">No</th>
+                                    <th>Nama Barang</th>
+                                    <th width="10%">Stok</th>
+                                    <th width="10%">Jumlah</th>
+                                    <th width="15%">Satuan</th>
+                                    <th width="15%">
+                                        <CButton color="info" size="sm" onClick={addInput}>
+                                            <FontAwesomeIcon icon={faPlus} />
+                                        </CButton>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {inputBarang.map((item, i) => (
+                                    <tr>
+                                        <td className="text-center">{i + 1}</td>
+                                        <td>
+                                            <CFormGroup>
+                                                <Autocomplete
+                                                    id="input-barang"
+                                                    clearOnEscape={true}
+                                                    options={dataBarang}
+                                                    getOptionSelected={(option, value) => option.id === value.id}
+                                                    getOptionLabel={option => option.nama_barang}
+                                                    value={{ nama_barang: item.nama_barang }}
+                                                    onChange={(event, values) => {
+                                                        if(values) {
+                                                            const stok_dapat_dijual = values.detail.filter((stok) => stok.id_cabang == input.id_cabang);
+                                                            const val = [...inputBarang];
+                                                            val[i].id_barang = values.id;
+                                                            val[i].nama_barang = values.nama_barang;
+                                                            val[i].harga_user = values.harga_user;
+                                                            val[i].harga_reseller = values.harga_reseller;
+                                                            val[i].stok_dapat_dijual = stok_dapat_dijual.length > 0 ? stok_dapat_dijual[0].stok_dapat_dijual : 0;
+                                                            val[i].harga_total = currentPelanggan.hak_akses === 'user' ? inputBarang[i].harga_user : inputBarang[i].harga_reseller;
+                                                            setInputBarang(val);
+                                                        } else {
+                                                            const val = [...inputBarang];
+                                                            val[i].id_barang = '';
+                                                            val[i].nama_barang = '';
+                                                            val[i].harga_user = '';
+                                                            val[i].harga_reseller = '';
+                                                            val[i].stok_dapat_dijual = '';
+                                                            val[i].kuantitas = 1;
+                                                            val[i].harga_total = 0;
+                                                            setInputBarang(val);
+                                                        }                
+                                                    }}
+                                                    renderInput={(params) => 
+                                                        <TextField {...params} />
+                                                    }
+                                                />                                
+                                            </CFormGroup>
+                                        </td>
+                                        <td className="text-center">{inputBarang[i].stok_dapat_dijual}</td>
+                                        <td className="text-center">{inputBarang[i].kuantitas}</td>
+                                        <td className="text-right">Rp. {new Intl.NumberFormat(['ban', 'id']).format(inputBarang[i].harga_total)}</td>
+                                        <td className="text-center">
+                                            <CButton className="mr-1" color="success" size="sm" onClick={() => {
+                                                const val = [...inputBarang];
+                                                
+                                                if(val[i].kuantitas < inputBarang[i].stok_dapat_dijual) {
+                                                    const harga = currentPelanggan.hak_akses === 'user' ? val[i].harga_user : val[i].harga_reseller;
+
+                                                    val[i].kuantitas += 1;
+                                                    val[i].harga_total += parseInt(harga);
+                                                    setInputBarang(val);
+                                                }
+                                            }}>
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </CButton>
+                                            <CButton className="mr-1" color="danger" size="sm" onClick={() => {
+                                                const val = [...inputBarang];
+                                                
+                                                if(val[i].kuantitas > 1) {
+                                                    const harga = currentPelanggan.hak_akses === 'user' ? val[i].harga_user : val[i].harga_reseller;
+
+                                                    val[i].kuantitas -= 1;
+                                                    val[i].harga_total -= parseInt(harga);
+                                                    setInputBarang(val);
+                                                } else {
+                                                    removeInput(i);
+                                                }
+                                            }}>
+                                                <FontAwesomeIcon icon={faMinus} />
+                                            </CButton>
+                                            <CButton color="danger" size="sm" onClick={() => removeInput(i)}>
+                                                <FontAwesomeIcon icon={faTrash} />
+                                            </CButton>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
                         <CRow>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="harga-barang">Harga Barang</CLabel>
-                                    <CurrencyFormat thousandSeparator={true} prefix={'Rp.'} customInput={CInput} name="harga-barang" value={currentHargaBarang} placeholder="Harga Barang" disabled={true} />
-                                </CFormGroup>
-                            </CCol>
                             <CCol xs="12" md="6">
                                 <CFormGroup>
                                     <CLabel htmlFor="syarat-pembayaran">Syarat Pembayaran</CLabel>
@@ -343,24 +385,19 @@ const PesananPenjualan = () => {
                                     </CSelect>
                                 </CFormGroup>
                             </CCol>
-                        </CRow>
-
-                        <CRow>
                             <CCol xs="12" lg="6">
                                 <CFormGroup>
                                     <CLabel htmlFor="diskon-persen">Diskon Persen</CLabel>
                                     <CInput type="number" min="0" max="100" id="diskon-persen" name="diskon_persen" value={input.diskon_persen} onChange={changeHandler} placeholder="Masukkan Diskon" />
-                                    <p className={diskonPersenVisibility} style={{ fontSize: 10, color: 'green' }}>Total harga Rp. {(currentHargaBarang * input.kuantitas) - (currentHargaBarang / 100 * input.diskon_persen)}</p>
                                 </CFormGroup>
                             </CCol>
+                        </CRow>
+
+                        <CRow>
                             <CCol xs="12" md="6">
                                 <CFormGroup>
                                     <CLabel htmlFor="diskon-langsung">Diskon Langsung</CLabel>
                                     <CurrencyFormat min="0" thousandSeparator={true} prefix={'Rp.'} customInput={CInput} name="diskon_langsung" value={input.diskon_langsung} onChange={changeHandler} placeholder="Masukkan Diskon" />
-                                    {diskonLangsungVisibility === 'd-block' ? 
-                                        <p className={diskonLangsungVisibility} style={{ fontSize: 10, color: 'green' }}>Total harga Rp. {(currentHargaBarang * input.kuantitas) - parseInt(input.diskon_langsung.replace(/[^0-9]+/g, ""))}</p>
-                                        : null
-                                    }
                                 </CFormGroup>
                             </CCol>
                         </CRow>
@@ -395,13 +432,27 @@ const PesananPenjualan = () => {
                     {loadCurrentDataPesananPenjualan ? null : 
                         <>
                             <CRow>
-                                <CCol xs="12" md="6">
-                                    <CLabel htmlFor="nama_barang">Nama Barang</CLabel>
-                                    <CInput type="text" id="nama_barang" name="nama_barang" value={currentPesananPenjualan.barang.nama_barang} placeholder="Nama Barang" disabled={true} />
-                                </CCol>
-                                <CCol xs="12" md="6">
-                                    <CLabel htmlFor="kuantitas">Kuantitas</CLabel>
-                                    <CInput type="text" id="kuantitas" name="kuantitas" value={`${currentPesananPenjualan.kuantitas} ${currentPesananPenjualan.satuan}`} placeholder="Jumlah Barang" disabled={true} />
+                                <CCol xs="12" md="12" className="table-responsive">
+                                    <table className="table table-sm table-bordered">
+                                        <thead>
+                                            <tr className="text-center">
+                                                <th>NO</th>
+                                                <th>Nama Barang</th>
+                                                <th>Jumlah</th>    
+                                                <th>Harga</th>
+                                            </tr>    
+                                        </thead>  
+                                        <tbody>
+                                            {currentPesananPenjualan.detail_pesanan_penjualan.map((detail, i) => (
+                                                <tr>
+                                                    <td className="text-center">{i + 1}</td>
+                                                    <td>{detail.barang.nama_barang}</td>
+                                                    <td className="text-center">{detail.kuantitas}</td>
+                                                    <td className="text-right">Rp. {new Intl.NumberFormat(['ban', 'id']).format(detail.total_harga)}</td>
+                                                </tr>
+                                            ))}    
+                                        </tbody>  
+                                    </table>                                    
                                 </CCol>
                             </CRow>
 

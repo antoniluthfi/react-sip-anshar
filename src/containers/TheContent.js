@@ -7,7 +7,6 @@ import {
 import { CContainer, CFade } from '@coreui/react'
 
 // routes config
-import administratorRoutes from '../routes/administratorRoutes';
 import adminGudangRoutes from '../routes/adminGudangRoutes';
 import marketingRoutes from '../routes/marketingRoutes';
 import axios from 'axios';
@@ -30,9 +29,7 @@ const TheContent = () => {
         })
         .then(response => {
             const result = response.data.result;
-            if(result.hak_akses === 'administrator') {
-                setRoutes(administratorRoutes);
-            } else if(result.hak_akses === 'admin gudang') {
+            if(result.hak_akses === 'admin gudang') {
                 setRoutes(adminGudangRoutes);
             } else if(result.hak_akses === 'marketing') {
                 setRoutes(marketingRoutes);

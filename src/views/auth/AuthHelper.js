@@ -33,9 +33,7 @@ const AuthHelper = () => {
                 payload: result.user
             });
 
-            if(result.user.hak_akses === 'administrator') {
-                setRouteLocation('/dashboard-administrator');
-            } else if(result.user.hak_akses === 'admin gudang') {
+            if(result.user.hak_akses === 'admin gudang') {
                 setRouteLocation('/dashboard-admin-gudang');
             } else if(result.user.hak_akses === 'marketing') {
                 setRouteLocation('/dashboard-marketing');

@@ -52,7 +52,8 @@ const CabangHelper = () => {
         nama_cabang: '',
         email: '',
         nomorhp: '',
-        alamat: ''
+        alamat: '',
+        singkatan: ''
     });
     const [details, setDetails] = useState([]);
 
@@ -82,7 +83,8 @@ const CabangHelper = () => {
             nama_cabang: '',
             email: '',
             nomorhp: '',
-            alamat: ''    
+            alamat: '',
+            singkatan: ''
         });
         setModalTitle('Tambah Data');
         setButtonSubmitName('Submit');
@@ -116,7 +118,8 @@ const CabangHelper = () => {
             nama_cabang: '',
             email: '',
             nomorhp: '',
-            alamat: ''    
+            alamat: '',
+            singkatan: ''
         });
         setModalTitle('Tambah Data');
         setButtonSubmitName('Submit');
@@ -150,14 +153,16 @@ const CabangHelper = () => {
             }
         })
         .then(response => {
-            setCurrentDataCabang(response.data.result);
+            const result = response.data.result;
+            setCurrentDataCabang(result);
 
             if(actionModal === 'update') {
                 setInput({
-                    nama_cabang: response.data.result.nama_cabang,
-                    email: response.data.result.email,
-                    nomorhp: response.data.result.nomorhp,
-                    alamat: response.data.result.alamat    
+                    nama_cabang: result.nama_cabang,
+                    email: result.email,
+                    nomorhp: result.nomorhp,
+                    alamat: result.alamat,
+                    singkatan: result.singkatan
                 });
             }
         })
@@ -196,7 +201,8 @@ const CabangHelper = () => {
             nama_cabang: input.nama_cabang,
             email: input.email,
             nomorhp: input.nomorhp,
-            alamat: input.alamat
+            alamat: input.alamat,
+            singkatan: input.singkatan
         },
         {
             headers: {
@@ -228,7 +234,8 @@ const CabangHelper = () => {
             nama_cabang: input.nama_cabang,
             email: input.email,
             nomorhp: input.nomorhp,
-            alamat: input.alamat
+            alamat: input.alamat,
+            singkatan: input.singkatan
         },
         {
             headers: {

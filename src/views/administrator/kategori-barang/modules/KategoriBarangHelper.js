@@ -17,11 +17,6 @@ const KategoriBarangHelper = () => {
             _style: { textAlign: 'center' },
         },
         {
-            key: 'id_purchasing',
-            label: 'Nama Purchasing',
-            _style: { textAlign: 'center' },
-        },
-        {
             key: 'show_details',
             label: '',
             _style: { width: '1%' },

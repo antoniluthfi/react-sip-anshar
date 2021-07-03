@@ -74,17 +74,20 @@ const PengirimanPesananHelper = () => {
     const [loadCurrentDataPengirimanPesanan, setLoadCurrentDataPengirimanPesanan] = useState(true);
     const [dataEkspedisi, setDataEkspedisi] = useState([]);
     const [loadDataEkspedisi, setLoadDataEkspedisi] = useState(true);
-    const [dataCabang, setDataCabang] = useState([]);
-    const [loadDataCabang, setLoadDataCabang] = useState(true);
+    const [dataProvinsi, setDataProvinsi] = useState([]);
+    const [dataKota, setDataKota] = useState([]);
+    const [dataOngkir, setDataOngkir] = useState([]);
     const [input, setInput] = useState({
         id_marketing: '',
         user_id: '',
         tanggal_pengiriman: '',
         alamat: '',
         ongkir: '0',
-        id_ekspedisi: '',
+        ekspedisi: '',
         id_cabang: '',
-        keterangan: ''
+        keterangan: '',
+        provinsi: '',
+        kota: '',
     });
     const [details, setDetails] = useState([]);
 
@@ -99,19 +102,19 @@ const PengirimanPesananHelper = () => {
         setDetails(newDetails)
     }
 
-    const changeHandler = e => {
+    const changeHandler = (e) => {
         setInput({
             ...input, [e.target.name]: e.target.value
         });
     }
 
-    const submitHandler = action => {
+    const submitHandler = (action) => {
         if(action === 'update') {
-            updateDataPengirimanPesanan(currentDataPengirimanPesanan.id_pesanan_penjualan);
+            updateDataPengirimanPesanan(currentDataPengirimanPesanan.kode_pesanan);
         }
     }
 
-    const closeModalHandler = action => {
+    const closeModalHandler = (action) => {
         if(action === 'submit' || action === 'update') {
             setSuccess(!success);
         } else if(action === 'view') {
@@ -123,10 +126,60 @@ const PengirimanPesananHelper = () => {
             user_id: '',
             tanggal_pengiriman: '',
             alamat: '',
-            ongkir: '',
-            id_ekspedisi: '',
+            ongkir: '0',
+            ekspedisi: '',
             id_cabang: '',
-            keterangan: ''    
+            keterangan: '',
+            provinsi: '',
+            kota: '',
+        });
+    }
+
+    const getDataProvinsi = async () => {
+        await axios.get(`${baseUrl}/rajaongkir/provinsi`, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            setDataProvinsi(response.data.result);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+    const getDataKota = async (id_provinsi) => {
+        await axios.get(`${baseUrl}/rajaongkir/kota/${id_provinsi}`, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            setDataKota(response.data.result);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+    const getDataOngkir = async () => {
+        await axios.post(`${baseUrl}/rajaongkir/ongkir`, {
+            destination: input.kota,
+            ekspedisi: input.ekspedisi
+        }, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            setDataOngkir(response.data.result);
+        })
+        .catch(error => {
+            console.log(error);
         });
     }
 
@@ -148,6 +201,8 @@ const PengirimanPesananHelper = () => {
     }
 
     const getDataPengirimanPesananById = async (id, actionModal) => {
+        let kode_pesanan;
+
         await axios.get(`${baseUrl}/pengiriman-pesanan/${id}`, {
             headers: {
                 'Accept': 'Application/json',
@@ -155,7 +210,8 @@ const PengirimanPesananHelper = () => {
             }
         })
         .then(response => {
-            const result = response.data.result
+            const result = response.data.result;
+            kode_pesanan = result.kode_pesanan;
             setCurrentDataPengirimanPesanan(result);
 
             if(actionModal === 'update') {
@@ -165,7 +221,7 @@ const PengirimanPesananHelper = () => {
                     tanggal_pengiriman: result.tanggal_pengiriman,
                     alamat: result.alamat,
                     ongkir: result.ongkir,
-                    id_ekspedisi: result.id_ekspedisi,
+                    ekspedisi: result.id_ekspedisi,
                     id_cabang: result.id_cabang,
                     keterangan: result.keterangan,
                 });
@@ -192,7 +248,7 @@ const PengirimanPesananHelper = () => {
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    deleteDataPengirimanPesanan(id);
+                    deleteDataPengirimanPesanan(kode_pesanan);
                 }
             })
         }
@@ -215,11 +271,11 @@ const PengirimanPesananHelper = () => {
         setLoadDataEkspedisi(false);
     }
 
-    const postDataFakturPenjualan = async payload => {
+    const postDataFakturPenjualan = async (payload) => {
         let message = '';
-        if(payload.tanggal_pengiriman == null) message = 'Barang belum dikirimkan!';
+        if(!payload.tanggal_pengiriman) message = 'Barang belum dikirimkan!';
 
-        if(message != '') {
+        if(message) {
             Swal.fire(
                 'Gagal',
                 message,
@@ -227,9 +283,10 @@ const PengirimanPesananHelper = () => {
             );
         } else {
             await axios.post(`${baseUrl}/faktur-penjualan`, {
-                id_pesanan_penjualan: payload.id_pesanan_penjualan,
+                kode_pesanan: payload.kode_pesanan,
                 id_marketing: currentUser.id,
                 user_id: payload.user_id,
+                id_cabang: payload.cabang.id
             },
             {
                 headers: {
@@ -256,12 +313,15 @@ const PengirimanPesananHelper = () => {
         }
     }
 
-    const updateDataPengirimanPesanan = async id_pesanan_penjualan => {
+    const updateDataPengirimanPesanan = async (kode_pesanan) => {
         let message = '';
-        if(input.tanggal_pengiriman == null) message = 'Tanggal pengiriman harus diisi!';
-        else if(input.id_ekspedisi == null) message = 'Ekspedisi harus dipilih salah satu!';
+        if(!input.tanggal_pengiriman) message = 'Tanggal pengiriman harus diisi!';
+        else if(!input.provinsi) message = 'Provinsi harus diisi!';
+        else if(!input.kota) message = 'Kota harus diisi!';
+        else if(!input.ekspedisi) message = 'Ekspedisi harus dipilih salah satu!';
+        else if(!input.ongkir) message = 'Ongkir harus diisi!';
         
-        if(message != '') {
+        if(message) {
             Swal.fire(
                 'Gagal',
                 message,
@@ -270,7 +330,7 @@ const PengirimanPesananHelper = () => {
         } else {
             let ongkir = 0;
             let total_harga = 0;
-            if(input.ongkir != '' || input.ongkir != 0) {
+            if(input.ongkir) {
                 if(input.ongkir.indexOf('.') !== -1 || input.ongkir.indexOf(',') !== -1) {
                     ongkir = input.ongkir.replace(/[^0-9]+/g, "");
                     total_harga = parseInt(currentDataPengirimanPesanan.pesanan_penjualan.total_harga) + parseInt(ongkir);
@@ -279,14 +339,14 @@ const PengirimanPesananHelper = () => {
                     total_harga = parseInt(currentDataPengirimanPesanan.pesanan_penjualan.total_harga) + parseInt(ongkir);
                 }
             }
-            console.log(total_harga);
 
-            await axios.put(`${baseUrl}/pengiriman-pesanan/${id_pesanan_penjualan}`, {
+            await axios.put(`${baseUrl}/pengiriman-pesanan/${kode_pesanan}`, {
                 tanggal_pengiriman: input.tanggal_pengiriman,
                 alamat: input.alamat == null ? currentDataPengirimanPesanan.user.alamat : input.alamat,
                 ongkir: ongkir,
-                id_ekspedisi: input.id_ekspedisi,
-                keterangan: input.keterangan    
+                id_ekspedisi: input.ekspedisi,
+                keterangan: input.keterangan,
+                total_harga: total_harga
             },
             {
                 headers: {
@@ -302,10 +362,6 @@ const PengirimanPesananHelper = () => {
                 );
     
                 getDataPengirimanPesanan();
-
-                if(total_harga > 0) {
-                    updatePesananPenjualan(id_pesanan_penjualan, total_harga);
-                }
             })
             .catch(error => {
                 Swal.fire(
@@ -319,25 +375,7 @@ const PengirimanPesananHelper = () => {
         }
     }
 
-    const updatePesananPenjualan = async (id_pesanan_penjualan, total_harga) => {
-        await axios.put(`${baseUrl}/pesanan-penjualan/${id_pesanan_penjualan}`, {
-            total_harga: total_harga
-        },
-        {
-            headers: {
-                'Accept': 'Application/json',
-                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
-            }
-        })
-        .then(response => {
-            console.log('success');
-        })
-        .catch(error => {
-            console.log(error);
-        });
-    }
-
-    const deleteDataPengirimanPesanan = async id => {
+    const deleteDataPengirimanPesanan = async (id) => {
         await axios.put(`${baseUrl}/pengiriman-pesanan/${id}`, {
             tanggal_pengiriman: '',
             alamat: '',
@@ -398,12 +436,15 @@ const PengirimanPesananHelper = () => {
         fields,
         success,
         info,
-        dataPengirimanPesanan,
-        loadDataPengirimanPesanan,
-        currentDataPengirimanPesanan,
-        loadCurrentDataPengirimanPesanan,
-        dataEkspedisi,
-        loadDataEkspedisi,
+        dataPengirimanPesanan, setDataPengirimanPesanan,
+        loadDataPengirimanPesanan, setLoadDatapengirimanPesanan,
+        currentDataPengirimanPesanan, setCurrentDataPengirimanPesanan,
+        loadCurrentDataPengirimanPesanan, setLoadCurrentDataPengirimanPesanan,
+        dataEkspedisi, setDataEkspedisi,
+        loadDataEkspedisi, setLoadDataEkspedisi,
+        dataProvinsi, setDataProvinsi,
+        dataKota, setDataKota,
+        dataOngkir, setDataOngkir,
         input,
         details,
         toggleDetails,
@@ -414,7 +455,10 @@ const PengirimanPesananHelper = () => {
         getDataPengirimanPesananById,
         getDataEkspedisi,
         postDataFakturPenjualan,
-        deleteDataFakturPenjualan
+        deleteDataFakturPenjualan,
+        getDataProvinsi,
+        getDataKota,
+        getDataOngkir
     }
 }
 

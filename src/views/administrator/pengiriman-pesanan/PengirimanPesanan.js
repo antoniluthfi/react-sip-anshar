@@ -28,12 +28,15 @@ const PengirimanPesanan = () => {
         fields,
         success,
         info,
-        dataPengirimanPesanan,
-        loadDataPengirimanPesanan,
-        currentDataPengirimanPesanan,
-        loadCurrentDataPengirimanPesanan,
-        dataEkspedisi,
-        loadDataEkspedisi,
+        dataPengirimanPesanan, setDataPengirimanPesanan,
+        loadDataPengirimanPesanan, setLoadDatapengirimanPesanan,
+        currentDataPengirimanPesanan, setCurrentDataPengirimanPesanan,
+        loadCurrentDataPengirimanPesanan, setLoadCurrentDataPengirimanPesanan,
+        dataEkspedisi, setDataEkspedisi,
+        loadDataEkspedisi, setLoadDataEkspedisi,
+        dataProvinsi, setDataProvinsi,
+        dataKota, setDataKota,
+        dataOngkir, setDataOngkir,
         input,
         details,
         toggleDetails,
@@ -44,12 +47,28 @@ const PengirimanPesanan = () => {
         getDataPengirimanPesananById,
         getDataEkspedisi,
         postDataFakturPenjualan,
-        deleteDataFakturPenjualan
+        deleteDataFakturPenjualan,
+        getDataProvinsi,
+        getDataKota,
+        getDataOngkir,
     } = PengirimanPesananHelper();
 
     useEffect(() => {
         getDataPengirimanPesanan();
         getDataEkspedisi();
+        getDataProvinsi();
+
+        return () => {
+            setDataPengirimanPesanan([]);
+            setLoadDatapengirimanPesanan(true);
+            setCurrentDataPengirimanPesanan({});
+            setLoadCurrentDataPengirimanPesanan(true);
+            setDataEkspedisi([]);
+            setLoadDataEkspedisi(true);
+            setDataProvinsi([]);
+            setDataKota([]);
+            setDataOngkir([]);
+        }
     }, []);
 
     return (
@@ -111,10 +130,10 @@ const PengirimanPesanan = () => {
                                         return (
                                         <CCollapse show={details.includes(index)}>
                                             <CCardBody>
-                                                <CButton size="sm" color="info" onClick={() => getDataPengirimanPesananById(item.id_pesanan_penjualan, 'view')}>
+                                                <CButton size="sm" color="info" onClick={() => getDataPengirimanPesananById(item.kode_pengiriman, 'view')}>
                                                     View Details
                                                 </CButton>
-                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataPengirimanPesananById(item.id_pesanan_penjualan, 'update')}>
+                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataPengirimanPesananById(item.kode_pengiriman, 'update')}>
                                                     Update
                                                 </CButton>
                                                 {item.faktur_penjualan == null ? 
@@ -122,15 +141,15 @@ const PengirimanPesanan = () => {
                                                         Buat Faktur Penjualan
                                                     </CButton>
                                                     : 
-                                                    <CButton size="sm" color="danger" className="ml-1" onClick={() => deleteDataFakturPenjualan(item.faktur_penjualan.no_bukti)}>
+                                                    <CButton size="sm" color="danger" className="ml-1" onClick={() => deleteDataFakturPenjualan(item.faktur_penjualan.no_faktur)}>
                                                         Hapus Faktur Penjualan
                                                     </CButton>                                                                                       
                                                 }
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataPengirimanPesananById(item.id_pesanan_penjualan, 'delete')}>
+                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataPengirimanPesananById(item.kode_pengiriman, 'delete')}>
                                                     Delete
                                                 </CButton>    
                                                 {item.id_ekspedisi == null ? null :
-                                                    <a href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/transaksi/pengiriman-pesanan/id/${item.id_pesanan_penjualan}`} target="_blank">
+                                                    <a href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/transaksi/pengiriman-pesanan/id/${item.kode_pengiriman}`} target="_blank" rel="noreferrer">
                                                         <CButton size="sm" color="warning" className="ml-1">
                                                             Cetak Laporan
                                                         </CButton>
@@ -165,13 +184,26 @@ const PengirimanPesanan = () => {
                                 <CInput type="date" name="tanggal_pengiriman" id="tanggal-pengiriman" value={input.tanggal_pengiriman} onChange={changeHandler} placeholder="Pilih Tanggal Pengiriman" />
                             </CCol>
                             <CCol xs="12" md="6">
-                                <CLabel htmlFor="ekspedisi">Pilih Ekspedisi</CLabel>
-                                <CSelect custom name="id_ekspedisi" id="ekspedisi" value={input.id_ekspedisi} onChange={changeHandler}>
-                                    {loadDataEkspedisi ? <option value="">Pilih Salah Satu</option> :
+                                <CLabel htmlFor="provinsi">Provinsi Tujuan</CLabel>
+                                <CSelect 
+                                    custom 
+                                    name="provinsi" 
+                                    id="provinsi" 
+                                    value={input.provinsi} 
+                                    onChange={(e) => {
+                                        changeHandler(e);
+                                        getDataKota(e.target.value);
+
+                                        if(e.target.value && input.kota && input.ekspedisi) {
+                                            getDataOngkir();
+                                        }
+                                    }}
+                                >
+                                    {dataProvinsi.length === 0 ? <option value="">Pilih Salah Satu</option> :
                                         <>
                                             <option value="">Pilih Salah Satu</option>
-                                            {dataEkspedisi.map(item => (
-                                                <option value={item.id}>{item.nama_ekspedisi}</option>
+                                            {dataProvinsi.map((item) => (
+                                                <option key={item.id} value={item.id}>{item.nama_provinsi}</option>
                                             ))}
                                         </>
                                     }
@@ -181,8 +213,70 @@ const PengirimanPesanan = () => {
 
                         <CRow className="mt-2">
                             <CCol xs="12" md="6">
-                                <CLabel htmlFor="ongkir">Biaya ongkos kirim</CLabel>
-                                <CurrencyFormat min="0" thousandSeparator={true} prefix={'Rp.'} customInput={CInput} name="ongkir" value={input.ongkir} onChange={changeHandler} placeholder="Masukkan Biaya Ongkos Kirim" />
+                                <CLabel htmlFor="kota">Kota Tujuan</CLabel>
+                                <CSelect 
+                                    custom 
+                                    name="kota" 
+                                    id="kota" 
+                                    value={input.kota} 
+                                    onChange={(e) => {
+                                        changeHandler(e);
+
+                                        if(input.provinsi && e.target.value && input.ekspedisi) {
+                                            getDataOngkir();
+                                        }
+                                    }}
+                                >
+                                    {dataKota.length === 0 ? <option value="">Pilih Salah Satu</option> :
+                                        <>
+                                            <option value="">Pilih Salah Satu</option>
+                                            {dataKota.map(item => (
+                                                <option key={item.id} value={item.id}>{item.nama_kota}</option>
+                                            ))}
+                                        </>
+                                    }
+                                </CSelect>
+                            </CCol>
+                            <CCol xs="12" md="6">
+                                <CLabel htmlFor="ekspedisi">Ekspedisi</CLabel>
+                                <CSelect 
+                                    custom 
+                                    name="ekspedisi" 
+                                    id="ekspedisi" 
+                                    value={input.ekspedisi} 
+                                    onChange={(e) => {
+                                        changeHandler(e);
+
+                                        if(input.provinsi && input.kota && e.target.value) {
+                                            getDataOngkir();
+                                        }
+                                    }}
+                                >
+                                    {dataEkspedisi.length === 0 ? <option value="">Pilih Salah Satu</option> :
+                                        <>
+                                            <option value="">Pilih Salah Satu</option>
+                                            {dataEkspedisi.map(item => (
+                                                <option key={item.id} value={item.nama_ekspedisi.toLowerCase()}>{item.nama_ekspedisi}</option>
+                                            ))}
+                                        </>
+                                    }
+                                </CSelect>
+                            </CCol>
+                        </CRow>
+
+                        <CRow className="mt-2">
+                            <CCol xs="12" md="12">
+                                <CLabel htmlFor="ongkir">Ongkos Kirim</CLabel>
+                                <CSelect custom name="ongkir" id="ongkir" value={input.ongkir} onChange={changeHandler}>
+                                    {dataOngkir.length === 0 ? <option value="">Pilih Salah Satu</option> :
+                                        <>
+                                            <option value="">Pilih Salah Satu</option>
+                                            {dataOngkir.map((item, i) => (
+                                                <option key={i} value={item.cost[0].value}>{item.service} - Rp. {new Intl.NumberFormat(['ban', 'id']).format(item.cost[0].value)} - ({item.cost[0].etd} Hari)</option>
+                                            ))}
+                                        </>
+                                    }
+                                </CSelect>
                             </CCol>
                         </CRow>
 

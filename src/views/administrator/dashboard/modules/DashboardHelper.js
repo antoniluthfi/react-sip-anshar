@@ -27,7 +27,7 @@ const DashboardHelper = () => {
             const result = response.data.result;
             setCurrentUser(result);
 
-            if(result.hak_akses === 'administrator' || result.hak_akses === 'admin gudang') {
+            if(result.hak_akses === 'admin gudang') {
                 getPemasukanHarian(`${baseUrl}/faktur-penjualan/pemasukan/harian/all`);
                 getPemasukanBulanan(`${baseUrl}/faktur-penjualan/pemasukan/bulanan/all`);
                 getDataPemasukanPerKategori(`${baseUrl}/faktur-penjualan/pemasukan/per/kategori-barang/all`);
@@ -42,7 +42,7 @@ const DashboardHelper = () => {
         });
     }
 
-    const getPemasukanHarian = async url => {
+    const getPemasukanHarian = async (url) => {
         await axios.get(url, {
             headers: {
                 'Accept': 'Application/json',
@@ -59,7 +59,7 @@ const DashboardHelper = () => {
         setLoadPemasukanHarian(false);
     }
 
-    const getPemasukanBulanan = async url => {
+    const getPemasukanBulanan = async (url) => {
         await axios.get(url, {
             headers: {
                 'Accept': 'Application/json',
@@ -76,7 +76,7 @@ const DashboardHelper = () => {
         setLoadPemasukanBulanan(false);
     }
 
-    const getDataPemasukanPerKategori = async url => {
+    const getDataPemasukanPerKategori = async (url) => {
         await axios.get(url, {
             headers: {
                 'Accept': 'Application/json',
@@ -84,13 +84,13 @@ const DashboardHelper = () => {
             }
         })
         .then(response => {
-            response.data.result.map(item => {
-                if(item.kategori.toLowerCase() == 'aksesoris') setPenjualanAksesoris(item.total_penjualan);
-                if(item.kategori.toLowerCase() == 'laptop') setPenjualanLaptop(item.total_penjualan);
-                if(item.kategori.toLowerCase() == 'networking') setPenjualanNetworking(item.total_penjualan);
-                if(item.kategori.toLowerCase() == 'cctv') setPenjualanCctv(item.total_penjualan);
-                if(item.kategori.toLowerCase() == 'pc') setPenjualanPc(item.total_penjualan);
-                if(item.kategori.toLowerCase() == 'printer') setPenjualanPrinter(item.total_penjualan);
+            response.data.result.map((item) => {
+                if(item.kategori.toLowerCase() === 'aksesoris') setPenjualanAksesoris(item.total_penjualan);
+                if(item.kategori.toLowerCase() === 'laptop') setPenjualanLaptop(item.total_penjualan);
+                if(item.kategori.toLowerCase() === 'networking') setPenjualanNetworking(item.total_penjualan);
+                if(item.kategori.toLowerCase() === 'cctv') setPenjualanCctv(item.total_penjualan);
+                if(item.kategori.toLowerCase() === 'pc') setPenjualanPc(item.total_penjualan);
+                if(item.kategori.toLowerCase() === 'printer') setPenjualanPrinter(item.total_penjualan);
             });
         })
         .catch(error => {
@@ -102,17 +102,17 @@ const DashboardHelper = () => {
 
     return {
         currentUser,
-        pemasukanHarian,
-        loadPemasukanHarian,
-        pemasukanBulanan,
-        loadPemasukanBulanan,
-        penjualanAksesoris,
-        penjualanLaptop,
-        penjualanCctv,
-        penjualanNetworking,
-        penjualanPc,
-        penjualanPrinter,
-        loadPenjualanBarang,
+        pemasukanHarian, setPemasukanHarian,
+        loadPemasukanHarian, setLoadPemasukanHarian,
+        pemasukanBulanan, setPemasukanBulanan,
+        loadPemasukanBulanan, setLoadPemasukanBulanan,
+        penjualanAksesoris, setPenjualanAksesoris,
+        penjualanLaptop, setPenjualanLaptop,
+        penjualanCctv, setPenjualanCctv,
+        penjualanNetworking, setPenjualanNetworking,
+        penjualanPc, setPenjualanPc,
+        penjualanPrinter, setPenjualanPrinter,
+        loadPenjualanBarang, setLoadPenjualanBarang,
         getCurrentUser,
     }
 }

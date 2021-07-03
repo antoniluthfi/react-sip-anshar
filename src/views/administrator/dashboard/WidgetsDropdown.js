@@ -5,28 +5,41 @@ import {
     CCol,
 } from '@coreui/react'
 import ChartLineSimple from '../../charts/ChartLineSimple'
-import ChartBarSimple from '../../charts/ChartBarSimple'
 import DashboardHelper from './modules/DashboardHelper';
 
 const WidgetsDropdown = () => {
     const {
         currentUser,
-        pemasukanHarian,
-        loadPemasukanHarian,
-        pemasukanBulanan,
-        loadPemasukanBulanan,
-        penjualanAksesoris,
-        penjualanLaptop,
-        penjualanCctv,
-        penjualanNetworking,
-        penjualanPc,
-        penjualanPrinter,
-        loadPenjualanBarang,
+        pemasukanHarian, setPemasukanHarian,
+        loadPemasukanHarian, setLoadPemasukanHarian,
+        pemasukanBulanan, setPemasukanBulanan,
+        loadPemasukanBulanan, setLoadPemasukanBulanan,
+        penjualanAksesoris, setPenjualanAksesoris,
+        penjualanLaptop, setPenjualanLaptop,
+        penjualanCctv, setPenjualanCctv,
+        penjualanNetworking, setPenjualanNetworking,
+        penjualanPc, setPenjualanPc,
+        penjualanPrinter, setPenjualanPrinter,
+        loadPenjualanBarang, setLoadPenjualanBarang,
         getCurrentUser,
     } = DashboardHelper();
 
     useEffect(() => {
         getCurrentUser();
+
+        return () => {
+            setPemasukanHarian(0);
+            setLoadPemasukanHarian(true);
+            setPemasukanBulanan(0);
+            setLoadPemasukanBulanan(false);
+            setPenjualanAksesoris(0);
+            setPenjualanLaptop(0);
+            setPenjualanCctv(0);
+            setPenjualanNetworking(0);
+            setPenjualanPc(0);
+            setPenjualanPrinter(0);
+            setLoadPenjualanBarang(0);
+        }
     }, []);
 
     // render
@@ -38,7 +51,7 @@ const WidgetsDropdown = () => {
                 <CWidgetDropdown
                     color="gradient-success"
                     header={loadPemasukanBulanan ? '0' : `Rp. ${new Intl.NumberFormat(['ban', 'id']).format(pemasukanBulanan)}`}
-                    text={`Pemasukan bulanan ${currentUser.hak_akses !== 'administrator' ? currentUser.name : 'CV. Twincom Group'}`}
+                    text={`Pemasukan bulanan ${currentUser.name}`}
                     footerSlot={
                         <ChartLineSimple
                             pointed
@@ -58,7 +71,7 @@ const WidgetsDropdown = () => {
                 <CWidgetDropdown
                     color="gradient-success"
                     header={loadPemasukanHarian ? '0' : `Rp. ${new Intl.NumberFormat(['ban', 'id']).format(pemasukanHarian)}`}
-                    text={`Pemasukan hari ini ${currentUser.hak_akses !== 'administrator' ? currentUser.name : 'CV. Twincom Group'}`}
+                    text={`Pemasukan hari ini ${currentUser.name}`}
                     footerSlot={
                         <ChartLineSimple
                             pointed

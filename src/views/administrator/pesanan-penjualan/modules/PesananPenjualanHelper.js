@@ -28,16 +28,6 @@ const PesananPenjualanHelper = () => {
             _style: { textAlign: 'center' },
         },
         {
-            key: 'nama_barang',
-            label: 'Barang',
-            _style: { textAlign: 'center' },
-        },
-        {
-            key: 'kuantitas',
-            label: 'Jumlah',
-            _style: { textAlign: 'center' },
-        },
-        {
             key: 'syarat_pembayaran',
             label: 'Syarat Pembayaran',
             _style: { textAlign: 'center' },
@@ -63,7 +53,6 @@ const PesananPenjualanHelper = () => {
     const [currentPesananPenjualan, setCurrentPesananPenjualan] = useState({});
     const [loadCurrentDataPesananPenjualan, setLoadCurrentDataPesananPenjualan] = useState(true);
     const [dataBarang, setDataBarang] = useState([]);
-    const [currentHargaBarang, setCurrentHargaBarang] = useState(0);
     const [dataPelanggan, setDataPelanggan] = useState([]);
     const [dataCabang, setDataCabang] = useState([]);
     const [loadDataCabang, setLoadDataCabang] = useState(true);
@@ -73,26 +62,27 @@ const PesananPenjualanHelper = () => {
     const [diskonPersenVisibility, setDiskonPersenVisibility] = useState('d-none');
     const [buttonSubmitName, setButtonSubmitName] = useState('Submit');
     const [modalTitle, setModalTitle] = useState('Tambah Data');
-    const [rolePelanggan, setRolePelanggan] = useState('');
     const [input, setInput] = useState({
         user_id: '',
-        id_barang: '',
-        kuantitas: '',
-        satuan: 'pcs',
+        id_cabang: '',
         diskon_langsung: '',
         diskon_persen: '',
         id_penjual: '',
-        stok_cabang: '',
-        jumlah: '',
         keterangan: '',
-        role: '',
         id_syarat_pembayaran: '',
     });
-    const [currentNamaBarang, setCurrentNamaBarang] = useState({
-        nama_barang: ''
-    });
+    const [inputBarang, setInputBarang] = useState([{
+        id_barang: '',
+        kuantitas: 1,
+        nama_barang: '',
+        harga_user: '',
+        harga_reseller: '',
+        stok_dapat_dijual: '',
+        harga_total: 0,
+    }]);
     const [currentPelanggan, setCurrentPelanggan] = useState({
-        name: ''
+        name: '',
+        hak_akses: ''
     });
     const [details, setDetails] = useState([]);
 
@@ -117,21 +107,28 @@ const PesananPenjualanHelper = () => {
         }
 
         setInput({
-            id_barang: '',
-            kuantitas: '',
-            satuan: 'pcs',
+            user_id: '',
             diskon_langsung: '',
             diskon_persen: '',
             id_penjual: '',
-            stok_cabang: '',
-            jumlah: '',
+            id_cabang: '',
             keterangan: '',
-            role: '',
             id_syarat_pembayaran: '',
         });
 
-        setCurrentNamaBarang({
-            nama_barang: ''
+        setInputBarang([{
+            id_barang: '',
+            kuantitas: 1,
+            nama_barang: '',
+            harga_user: '',
+            harga_reseller: '',
+            stok_dapat_dijual: '',
+            harga_total: 0,    
+        }]);
+
+        setCurrentPelanggan({
+            name: '',
+            hak_akses: ''    
         });
     }
 
@@ -140,7 +137,7 @@ const PesananPenjualanHelper = () => {
             ...input, [e.target.name]: e.target.value
         });
 
-        if(e.target.name === 'diskon_langsung' && e.target.value != '') {
+        if(e.target.name === 'diskon_langsung' && e.target.value) {
             setDiskonLangsungVisibility('d-block');
             setDiskonPersenVisibility('d-none');
 
@@ -149,7 +146,7 @@ const PesananPenjualanHelper = () => {
                 diskon_langsung: e.target.value,
                 diskon_persen: ''
             });
-        } else if(e.target.name === 'diskon_persen' && e.target.value != '') {
+        } else if(e.target.name === 'diskon_persen' && e.target.value) {
             setDiskonLangsungVisibility('d-none');
             setDiskonPersenVisibility('d-block');
 
@@ -159,28 +156,18 @@ const PesananPenjualanHelper = () => {
                 diskon_persen: e.target.value
             });
         }
-
-        if(currentUser.hak_akses === 'administrator') {
-            if(e.target.name === 'role') {
-                getDataStokBarangById(input.id_barang);
-            }
-        }
     }
 
     const submitHandler = action => {
         if(action === 'submit') {
-            updateStokBarang(input.id_barang, input.stok_cabang, input.kuantitas);
+            postDataPesananaPenjualan();
         } else if(action === 'update') {
-            updateDataPesananPenjualan(currentPesananPenjualan.id);
+            updateDataPesananPenjualan(currentPesananPenjualan.kode_pesanan);
         }
     }
 
     const getCurrentUser = async () => {
-        if(currentUser.hak_akses === 'administrator') {
-            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-        } else {
-            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-        }
+        getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
     }
 
     const getDataPesananPenjualan = async url => {
@@ -209,24 +196,40 @@ const PesananPenjualanHelper = () => {
         })
         .then(response => {
             const result = response.data.result;
-            getDataStokBarangById(result.id_barang);
             setCurrentPesananPenjualan(result);
 
             if(actionModal === 'update') {
                 setInput({
-                    id_barang: result.id_barang,
-                    kuantitas: result.kuantitas,
-                    satuan: result.satuan,
-                    diskon_persen: result.diskon.indexOf('%') == -1 ? '' : result.diskon.replace(/[^0-9]+/g, ""),
-                    diskon_langsung: result.diskon.indexOf('%') == -1 ? result.diskon : '',
+                    user_id: result.user_id,
+                    id_cabang: result.id_cabang,
+                    diskon_persen: '',
+                    diskon_langsung: result.diskon,
                     id_penjual: result.id_penjual,
-                    stok_cabang: result.stok_cabang,
                     keterangan: result.keterangan,
                     id_syarat_pembayaran: result.id_syarat_pembayaran,
                 });
     
-                setCurrentPelanggan({ name: result.pelanggan.name });
-                setCurrentNamaBarang({ nama_barang: result.barang.nama_barang });
+                setCurrentPelanggan({ 
+                    name: result.pelanggan.name,
+                    hak_akses: result.pelanggan.hak_akses
+                });
+
+                const detailPesananPenjualan = [];
+                console.log(result.detail_pesanan_penjualan);
+                result.detail_pesanan_penjualan.map((detail) => {
+                    detailPesananPenjualan.push({
+                        id_barang: detail.id_barang,
+                        kuantitas: detail.kuantitas,
+                        nama_barang: detail.barang.nama_barang,
+                        harga_user: detail.barang.harga_user,
+                        harga_reseller: detail.barang.harga_reseller,
+                        stok_dapat_dijual: detail.stok_dapat_dijual,
+                        harga_total: detail.total_harga,
+                    });
+                });
+                setInputBarang(detailPesananPenjualan);
+
+                getDataStokBarang(result.id_cabang);
             }
         })
         .catch(error => {
@@ -273,8 +276,8 @@ const PesananPenjualanHelper = () => {
         });
     }
 
-    const getDataStokBarang = async () => {
-        await axios.get(`${baseUrl}/stok-barang/data/available`, {
+    const getDataStokBarang = async (id_cabang) => {
+        await axios.get(`${baseUrl}/stok-barang/data/available/${id_cabang}`, {
             headers: {
                 'Accept': 'Application/json',
                 'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
@@ -322,80 +325,28 @@ const PesananPenjualanHelper = () => {
         setLoadDataSyaratPembayaran(false);
     }
 
-    const getDataStokBarangById = async id => {
-        await axios.get(`${baseUrl}/stok-barang/${id}`, {
-            headers: {
-                'Accept': 'Application/json',
-                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
-            }
-        })
-        .then(response => {
-            const result = response.data.result;
-            const role = currentUser.hak_akses === 'administrator' ? input.role : rolePelanggan;
-            
-            if(role === 'user') {
-                let harga = 0;
-                if(input.satuan === 'pcs' || input.satuan == null) {
-                    harga = result.harga_user;
-                } else {
-                    if(result.total_pack === 0) {
-                        harga = result.harga_user;
-                    } else {
-                        harga = result.harga_user * result.total_pack;
-                    }
-                }
-
-                setCurrentHargaBarang(harga);
-            } else if(role === 'reseller') {
-                let harga = 0;
-                if(input.satuan === 'pcs' || input.satuan == null) {
-                    harga = result.harga_reseller;
-                } else {
-                    if(result.total_pack === 0) {
-                        harga = result.harga_reseller;
-                    } else {
-                        harga = result.harga_reseller * result.total_pack;
-                    }
-                }
-
-                setCurrentHargaBarang(harga);
-            }
-        })
-        .catch(error => {
-            console.log(error);
-        });
-    }
-
-    console.log(currentHargaBarang);
     const postDataPesananaPenjualan = async () => {
-        let diskon = 0;
-        let kuantitas = input.kuantitas == '' ? 1 : input.kuantitas;
-        let total_harga = currentHargaBarang * kuantitas;
-        if(input.diskon_langsung != '') {
-            if(input.diskon_langsung.indexOf('.') !== -1 || input.diskon_langsung.indexOf(',') !== -1) {
-                diskon = input.diskon_langsung.replace(/[^0-9]+/g, "");
-                total_harga = (currentHargaBarang * kuantitas) - input.diskon_langsung.replace(/[^0-9]+/g, "");
-            } else {
-                total_harga = (currentHargaBarang * kuantitas)  - input.diskon_langsung;
-            }
+        let tipe_diskon = '';
+        if(input.diskon_langsung) {
+            tipe_diskon = 'langsung';
         }
 
-        if(input.diskon_persen != '') {
-            diskon = `${input.diskon_persen} %`;
-            total_harga = (currentHargaBarang * kuantitas) - (currentHargaBarang / 100 * input.diskon_persen);
+        if(input.diskon_persen) {
+            tipe_diskon = 'persen';
         }
+
+        const dataBarang = Array.from(new Set(inputBarang.map((x) => x.id_barang)))
+                            .map((id) => inputBarang.filter((s) => s.id_barang === id)[0]);
 
         await axios.post(`${baseUrl}/pesanan-penjualan`, {
             user_id: input.user_id,
-            id_barang: input.id_barang,
-            kuantitas: input.kuantitas,
-            satuan: input.satuan,
-            diskon: diskon,
-            total_harga: total_harga,
+            tipe_diskon: tipe_diskon,
+            diskon: input.diskon_langsung || input.diskon_persen || '',
             id_penjual: currentUser.id,
-            stok_cabang: input.stok_cabang,
             keterangan: input.keterangan,
             id_syarat_pembayaran: input.id_syarat_pembayaran,
+            id_cabang: input.id_cabang,
+            barang: dataBarang
         },
         {
             headers: {
@@ -403,12 +354,8 @@ const PesananPenjualanHelper = () => {
                 'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
             }
         })
-        .then(response => {
-            if(currentUser.hak_akses === 'administrator') {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-            } else {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-            }
+        .then(() => {
+            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
 
             Swal.fire(
                 'Berhasil',
@@ -427,9 +374,9 @@ const PesananPenjualanHelper = () => {
         closeModalHandler('submit');
     }
 
-    const postDataPengirimanPesanan = async payload => {
+    const postDataPengirimanPesanan = async (payload) => {
         await axios.post(`${baseUrl}/pengiriman-pesanan`, {
-            id_pesanan_penjualan: payload.id,
+            kode_pesanan: payload.kode_pesanan,
             user_id: payload.user_id,
             id_marketing: currentUser.id,
             id_cabang: currentUser.cabang.id,
@@ -441,11 +388,7 @@ const PesananPenjualanHelper = () => {
             }
         })
         .then(response => {
-            if(currentUser.hak_akses === 'administrator') {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-            } else {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-            }
+            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
 
             Swal.fire(
                 'Berhasil',
@@ -464,7 +407,7 @@ const PesananPenjualanHelper = () => {
 
     const postDataFakturPenjualan = async payload => {
         await axios.post(`${baseUrl}/faktur-penjualan`, {
-            id_pesanan_penjualan: payload.id,
+            kode_pesanan: payload.kode_pesanan,
             id_marketing: currentUser.id,
             user_id: payload.user_id,
         },
@@ -475,11 +418,7 @@ const PesananPenjualanHelper = () => {
             } 
         })
         .then(response => {
-            if(currentUser.hak_akses === 'administrator') {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-            } else {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-            }    
+            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);  
 
             Swal.fire(
                 'Berhasil',
@@ -496,93 +435,42 @@ const PesananPenjualanHelper = () => {
         });
     }
 
-    const updateStokBarang = async (id_barang, cabang, jumlah) => {
+    const updateDataPesananPenjualan = async (id) => {
         let message = '';
-        if(input.user_id == '') message = 'Nama pelanggan harus diisi!';
-        else if(input.id_barang == '') message = 'Nama barang harus diisi!';
-        else if(input.kuantitas == '') message = 'Jumlah harus diisi!';
-        else if(input.satuan == '') message = 'Satuan harus dipilih salah satu!';
-        else if(input.stok_cabang == '') message = 'Cabang harus dipilih salah satu!';
-        else if(input.id_syarat_pembayaran == '') message = 'Syarat pembayaran harus dipilih salah satu!';
+        if(!input.user_id) message = 'Nama pelanggan harus diisi!';
+        else if(!input.id_syarat_pembayaran) message = 'Syarat pembayaran harus dipilih salah satu!';
 
-        if(message != '') {
+        if(message) {
             Swal.fire(
                 'Gagal',
                 message,
                 'error'
             );
         } else {
-            await axios.put(`${baseUrl}/stok-barang/pesanan-penjualan/${id_barang}`, {
-                jumlah: jumlah,
-                cabang: cabang
-            },
-            {
-                headers: {
-                    'Accept': 'Application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
-                }
-            })
-            .then(response => {
-                postDataPesananaPenjualan();
-            })
-            .catch(error => {
-                Swal.fire(
-                    'Gagal',
-                    error.message,
-                    'error'
-                );
-            });
-        }
-    }
-
-    const updateDataPesananPenjualan = async id => {
-        let message = '';
-        if(input.user_id == '') message = 'Nama pelanggan harus diisi!';
-        else if(input.id_barang == '') message = 'Nama barang harus diisi!';
-        else if(input.kuantitas == '') message = 'Jumlah harus diisi!';
-        else if(input.satuan == '') message = 'Satuan harus dipilih salah satu!';
-        else if(input.stok_cabang == '') message = 'Cabang harus dipilih salah satu!';
-        else if(input.id_syarat_pembayaran == '') message = 'Syarat pembayaran harus dipilih salah satu!';
-
-        if(message != '') {
-            Swal.fire(
-                'Gagal',
-                message,
-                'error'
-            );
-        } else {
-            let diskon = 0;
-            let kuantitas = 1;
-            let total_harga = currentHargaBarang;
-    
-            if(input.diskon_langsung != '') {
-                if(input.diskon_langsung.indexOf('.') !== -1 || input.diskon_langsung.indexOf(',') !== -1) {
-                    diskon = input.diskon_langsung.replace(/[^0-9]+/g, "");
-                    kuantitas = input.kuantitas == '' ? 1 : input.kuantitas;
-                    total_harga = (currentHargaBarang * kuantitas) - input.diskon_langsung.replace(/[^0-9]+/g, "");
-                } else {
-                    kuantitas = input.kuantitas == '' ? 1 : input.kuantitas;
-                    total_harga = (currentHargaBarang * kuantitas)  - input.diskon_langsung;
-                }
+            let tipe_diskon = '';
+            if(input.diskon_langsung) {
+                tipe_diskon = 'langsung';
             }
     
-            if(input.diskon_persen != '') {
-                diskon = `${input.diskon_persen} %`;
-                kuantitas = input.kuantitas == '' ? 1 : input.kuantitas;
-                total_harga = (currentHargaBarang * kuantitas) - (currentHargaBarang / 100 * input.diskon_persen);
+            if(input.diskon_persen) {
+                tipe_diskon = 'persen';
             }
-    
+        
+            const dataBarang = Array.from(new Set(inputBarang.map((x) => x.id_barang)))
+                                .map((id) => inputBarang.filter((s) => s.id_barang === id)[0]);
+
+                                console.log(inputBarang);
+                                console.log(dataBarang);
+
             await axios.put(`${baseUrl}/pesanan-penjualan/${id}`, {
                 user_id: input.user_id,
-                id_barang: input.id_barang,
-                kuantitas: input.kuantitas,
-                satuan: input.satuan,
-                diskon: diskon,
-                total_harga: total_harga,
+                tipe_diskon: tipe_diskon,
+                diskon: input.diskon_langsung || input.diskon_persen || '',
                 id_penjual: currentUser.id,
-                stok_cabang: input.stok_cabang,
                 keterangan: input.keterangan,
-                id_syarat_pembayaran: input.syarat_pembayaran,
+                id_syarat_pembayaran: input.id_syarat_pembayaran,
+                id_cabang: input.id_cabang,
+                barang: dataBarang
             },
             {
                 headers: {
@@ -591,12 +479,8 @@ const PesananPenjualanHelper = () => {
                 }
             })
             .then(response => {
-                if(currentUser.hak_akses === 'administrator') {
-                    getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-                } else {
-                    getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-                }
-    
+                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
+                
                 Swal.fire(
                     'Berhasil',
                     response.data.message,
@@ -623,9 +507,9 @@ const PesananPenjualanHelper = () => {
             }
         })
         .then(response => {
-            if(currentPesananPenjualan.pengiriman_pesanan != null) {
+            if(currentPesananPenjualan.pengiriman_pesanan) {
                 deletePengirimanPesanan(id);
-            } else if(currentPesananPenjualan.faktur_penjualan != null) {
+            } else if(currentPesananPenjualan.faktur_penjualan) {
                 deleteDataFakturPenjualan(id);
             } else {
                 Swal.fire(
@@ -635,11 +519,7 @@ const PesananPenjualanHelper = () => {
                 );
             }
 
-            if(currentUser.hak_akses === 'administrator') {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-            } else {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-            }
+            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
         })
         .catch(error => {
             Swal.fire(
@@ -650,19 +530,15 @@ const PesananPenjualanHelper = () => {
         });
     }
 
-    const deletePengirimanPesanan = async id => {
-        await axios.delete(`${baseUrl}/pengiriman-pesanan/${id}`, {
+    const deletePengirimanPesanan = async (id) => {
+        await axios.delete(`${baseUrl}/pengiriman-pesanan/kode-pesanan/${id}`, {
             headers: {
                 'Accept': 'Application/json',
                 'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
             }
         })
         .then(response => {
-            if(currentUser.hak_akses === 'administrator') {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-            } else {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-            }
+            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
 
             Swal.fire(
                 'Berhasil',
@@ -679,7 +555,7 @@ const PesananPenjualanHelper = () => {
         });
     }
 
-    const deleteDataFakturPenjualan = async id => {
+    const deleteDataFakturPenjualan = async (id) => {
         await axios.delete(`${baseUrl}/faktur-penjualan/${id}`, {
             headers: {
                 'Accept': 'Application/json',
@@ -687,11 +563,7 @@ const PesananPenjualanHelper = () => {
             }
         })
         .then(response => {
-            if(currentUser.hak_akses === 'administrator') {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan`);
-            } else {
-                getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
-            }
+            getDataPesananPenjualan(`${baseUrl}/pesanan-penjualan/user/${currentUser.id}`);
 
             Swal.fire(
                 'Berhasil',
@@ -706,6 +578,26 @@ const PesananPenjualanHelper = () => {
                 'error'
             );
         });
+    }
+
+    const addInput = () => {
+        const values = [...inputBarang];
+        values.push({
+            id_barang: '',
+            kuantitas: 1,
+            nama_barang: '',
+            harga_user: '',
+            harga_reseller: '',
+            stok_dapat_dijual: '',
+            harga_total: 0,
+        });
+        setInputBarang(values);
+    }
+
+    const removeInput = (index) => {
+        const values = [...inputBarang];
+        values.splice(index, 1);
+        setInputBarang(values);
     }
 
     return {
@@ -722,9 +614,8 @@ const PesananPenjualanHelper = () => {
         dataPelanggan,
         currentPelanggan, setCurrentPelanggan,
         input, setInput,
-        currentNamaBarang, setCurrentNamaBarang,
-        dataBarang,
-        currentHargaBarang, 
+        inputBarang, setInputBarang,
+        dataBarang, setDataBarang,
         dataSyaratPembayaran,
         loadDataSyaratPembayaran,
         diskonLangsungVisibility,
@@ -732,7 +623,6 @@ const PesananPenjualanHelper = () => {
         buttonSubmitName,
         modalTitle,
         details,
-        rolePelanggan, setRolePelanggan,
         toggleDetails,
         closeModalHandler,
         changeHandler,
@@ -740,14 +630,15 @@ const PesananPenjualanHelper = () => {
         getCurrentUser,
         getDataPesananPenjualanById,
         getDataStokBarang,
-        getDataStokBarangById,
         getDataCabang,
         getDataPelanggan,
         postDataPengirimanPesanan,
         postDataFakturPenjualan,
         getSyaratPembayaran,
         deletePengirimanPesanan,
-        deleteDataFakturPenjualan
+        deleteDataFakturPenjualan,
+        addInput,
+        removeInput
     }
 }
 

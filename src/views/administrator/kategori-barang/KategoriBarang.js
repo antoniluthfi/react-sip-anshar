@@ -88,12 +88,6 @@ const KategoriBarang = () => {
                                             {item.nama_kategori}
                                         </td>
                                     )),
-                                    'id_purchasing':
-                                    (item => (
-                                        <td className="text-center">
-                                            {item.purchasing.name}
-                                        </td>
-                                    )),
                                     'show_details':
                                     (item, index)=>{
                                         return (
@@ -147,44 +141,6 @@ const KategoriBarang = () => {
                 </CModalHeader>
                 <CModalBody>
                     <CForm action="" method="post">
-                        <CRow>
-                            <CCol xs="12" md="12">
-                                <CFormGroup>
-                                    <CLabel htmlFor="input-pur">Pilih Purchasing</CLabel>
-                                    <Autocomplete
-                                        id="input-pur"
-                                        clearOnEscape={true}
-                                        options={purchasingOptions}
-                                        getOptionSelected={(option, value) => option.name === value.name}
-                                        getOptionLabel={option => option.name}
-                                        value={{ name: currentPurchasing.name }}
-                                        onChange={(event, values) => {
-                                            if(values !== null) {
-                                                setCurrentPurchasing({
-                                                    ...currentPurchasing, name: values.name
-                                                });
-
-                                                setInput({
-                                                    ...input, id_purchasing: values.id
-                                                });
-                                            } else {
-                                                setCurrentPurchasing({
-                                                    ...currentPurchasing, name: ''
-                                                });
-
-                                                setInput({
-                                                    ...input, id_purchasing: ''
-                                                });
-                                            }                
-                                        }}
-                                        renderInput={(params) => 
-                                            <TextField {...params} />
-                                        }
-                                    />                                
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-
                         <CRow>
                             <CCol xs="12" md="12">
                                 <CLabel htmlFor="kategori">Kategori</CLabel>

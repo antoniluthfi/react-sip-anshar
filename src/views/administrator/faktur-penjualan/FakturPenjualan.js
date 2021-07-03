@@ -82,10 +82,10 @@ const FakturPenjualan = () => {
                                             {item.user.name}
                                         </td>
                                     )),
-                                    'no_bukti':
+                                    'kode_pesanan':
                                     (item => (
                                         <td className="text-center">
-                                            {item.no_bukti}
+                                            {item.kode_pesanan}
                                         </td>
                                     )),
                                     'created_at':
@@ -151,23 +151,23 @@ const FakturPenjualan = () => {
                                         return (
                                         <CCollapse show={details.includes(index)}>
                                             <CCardBody>
-                                                <CButton size="sm" color="info" onClick={() => getDataFakturPenjualanById(item.no_bukti, 'view')}>
+                                                <CButton size="sm" color="info" onClick={() => getDataFakturPenjualanById(item.no_faktur, 'view')}>
                                                     View Details
                                                 </CButton>
-                                                {item.nominal == null ?
-                                                    <CButton size="sm" color="success" className="ml-1" onClick={() => getDataFakturPenjualanById(item.no_bukti, 'update')}>
+                                                {!item.nominal ?
+                                                    <CButton size="sm" color="success" className="ml-1" onClick={() => getDataFakturPenjualanById(item.no_faktur, 'update')}>
                                                         Update
                                                     </CButton> : item.terhutang !== 0 ?
-                                                    <CButton size="sm" color="warning" className="ml-1" onClick={() => getDataFakturPenjualanById(item.no_bukti, 'lunasi')}>
+                                                    <CButton size="sm" color="warning" className="ml-1" onClick={() => getDataFakturPenjualanById(item.no_faktur, 'lunasi')}>
                                                         Bayar Sisa
                                                     </CButton>                                                
                                                     : null                                               
                                                 }
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataFakturPenjualanById(item.no_bukti, 'delete')}>
+                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataFakturPenjualanById(item.no_faktur, 'delete')}>
                                                     Delete
                                                 </CButton>   
-                                                {item.nominal == null ? null :
-                                                    <a href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/transaksi/faktur-penjualan/id/${item.no_bukti}`} target="_blank" rel="noreferrer">
+                                                {!item.nominal ? null :
+                                                    <a href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/transaksi/faktur-penjualan/id/${item.no_faktur}`} target="_blank" rel="noreferrer">
                                                         <CButton size="sm" color="warning" className="ml-1">
                                                             Cetak Laporan
                                                         </CButton>
@@ -234,6 +234,9 @@ const FakturPenjualan = () => {
                                     <option value="Lunas">Lunas</option>
                                 </CSelect>
                             </CCol>
+                        </CRow>
+
+                        <CRow className="mt-3">
                             <CCol xs="12" md="12" className={nominalVisibility}>
                                 <CLabel htmlFor="nominal">Nominal</CLabel>
                                 <CurrencyFormat type="text" name="nominal" value={input.nominal} thousandSeparator={true} prefix={'Rp. '} onChange={changeHandler} customInput={CInput} placeholder="Masukkan Nominal" />
@@ -266,8 +269,8 @@ const FakturPenjualan = () => {
                         <>
                             <CRow>
                                 <CCol xs="12" md="6">
-                                    <CLabel htmlFor="no-bukti">Nomor Bukti</CLabel>
-                                    <CInput type="text" name="no_bukti" id="no-bukti" value={currentDataFaktur.no_bukti} placeholder="Nomor Bukti" disabled={true} />
+                                    <CLabel htmlFor="no-bukti">Nomor Faktur</CLabel>
+                                    <CInput type="text" name="no_bukti" id="no-bukti" value={currentDataFaktur.no_faktur} placeholder="Nomor Faktur" disabled={true} />
                                 </CCol>
                                 <CCol xs="12" md="6">
                                     <CLabel htmlFor="tgl-bayar">Tanggal Bayar</CLabel>
@@ -278,22 +281,22 @@ const FakturPenjualan = () => {
                             <CRow className="mt-2">
                                 <CCol xs="12" md="6">
                                     <CLabel htmlFor="nama_pelanggan">Nama Pelanggan</CLabel>
-                                    <CInput type="number" id="nama_pelanggan" name="nama_pelanggan" value={currentDataFaktur.user.name} placeholder="Nama Pelanggan" disabled={true} />
+                                    <CInput type="text" id="nama_pelanggan" name="nama_pelanggan" value={currentDataFaktur.user.name} placeholder="Nama Pelanggan" disabled={true} />
                                 </CCol>
                                 <CCol xs="12" md="6">
                                     <CLabel htmlFor="bank">Bank</CLabel>
-                                    <CInput type="number" id="bank" name="bank" value={currentDataFaktur.bank == null ? null : currentDataFaktur.bank.nama_bank} placeholder="Bank" disabled={true} />
+                                    <CInput type="text" id="bank" name="bank" value={!currentDataFaktur.bank ? '-' : currentDataFaktur.bank.nama_bank} placeholder="Bank" disabled={true} />
                                 </CCol>
                             </CRow>
 
                             <CRow className="mt-2">
                                 <CCol xs="12" md="6">
                                     <CLabel htmlFor="total_faktur">Total Faktur</CLabel>
-                                    <CInput type="text" name="total_faktur" id="total_faktur" value={currentDataFaktur.nominal == null ? null : `Rp. ${new Intl.NumberFormat(['ban', 'id']).format(currentDataFaktur.nominal)}`} placeholder="Total Faktur" disabled={true} />
+                                    <CInput type="text" name="total_faktur" id="total_faktur" value={!currentDataFaktur.nominal ? null : `Rp. ${new Intl.NumberFormat(['ban', 'id']).format(currentDataFaktur.nominal)}`} placeholder="Total Faktur" disabled={true} />
                                 </CCol>
                                 <CCol xs="12" md="6">
                                     <CLabel htmlFor="terhutang">Terhutang</CLabel>
-                                    <CInput type="text" name="terhutang" id="terhutang" value={currentDataFaktur.terhutang == null ? null : `Rp. ${new Intl.NumberFormat(['ban', 'id']).format(currentDataFaktur.terhutang)}`} placeholder="Terhutang" disabled={true} />
+                                    <CInput type="text" name="terhutang" id="terhutang" value={!currentDataFaktur.terhutang ? null : `Rp. ${new Intl.NumberFormat(['ban', 'id']).format(currentDataFaktur.terhutang)}`} placeholder="Terhutang" disabled={true} />
                                 </CCol>
                             </CRow>
 
@@ -304,7 +307,7 @@ const FakturPenjualan = () => {
                                 </CCol>
                                 <CCol xs="12" md="6">
                                     <CLabel htmlFor="penjual">Penjual</CLabel>
-                                    <CInput type="number" id="penjual" name="penjual" value={currentDataFaktur.marketing.name} placeholder="Nama Penjual" disabled={true} />
+                                    <CInput type="text" id="penjual" name="penjual" value={currentDataFaktur.marketing.name} placeholder="Nama Penjual" disabled={true} />
                                 </CCol>
                             </CRow>                        
                         </>

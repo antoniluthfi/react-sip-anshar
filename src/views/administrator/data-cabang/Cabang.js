@@ -124,18 +124,16 @@ const Cabang = () => {
                 <CModalBody>
                     <CForm action="" method="post">
                         <CRow>
-                            <CCol xs="12" md="12">
+                            <CCol xs="12" md="6">
                                 <CFormGroup>
                                     <CLabel htmlFor="nama-cabang">Nama Cabang</CLabel>
                                     <CInput type="text" id="nama-cabang" name="nama_cabang" value={input.nama_cabang} onChange={changeHandler} placeholder="Masukkan Nama Cabang" disabled={formDisabled} />
                                 </CFormGroup>
                             </CCol>
-                        </CRow>
-                        <CRow>
-                            <CCol xs="12" md="12">
+                            <CCol xs="12" md="6">
                                 <CFormGroup>
-                                    <CLabel htmlFor="alamat">Alamat</CLabel>
-                                    <CInput type="text" id="alamat" name="alamat" value={input.alamat} onChange={changeHandler} placeholder="Masukkan Alamat" disabled={formDisabled} />
+                                    <CLabel htmlFor="singkatan">Singkatan</CLabel>
+                                    <CInput type="text" id="singkatan" name="singkatan" value={input.singkatan} onChange={changeHandler} placeholder="Masukkan Singkatan Nama" disabled={formDisabled} />
                                 </CFormGroup>
                             </CCol>
                         </CRow>
@@ -150,6 +148,14 @@ const Cabang = () => {
                                 <CFormGroup>
                                     <CLabel htmlFor="nomorhp">Nomor HP</CLabel>
                                     <CInput type="text" id="nomorhp" name="nomorhp" value={input.nomorhp} onChange={changeHandler} placeholder="Masukkan Nomor HP" disabled={formDisabled} />
+                                </CFormGroup>
+                            </CCol>
+                        </CRow>
+                        <CRow>
+                            <CCol xs="12" md="12">
+                                <CFormGroup>
+                                    <CLabel htmlFor="alamat">Alamat</CLabel>
+                                    <CInput type="text" id="alamat" name="alamat" value={input.alamat} onChange={changeHandler} placeholder="Masukkan Alamat" disabled={formDisabled} />
                                 </CFormGroup>
                             </CCol>
                         </CRow>

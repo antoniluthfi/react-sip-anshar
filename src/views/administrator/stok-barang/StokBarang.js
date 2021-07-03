@@ -5,6 +5,9 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faTrash } from '@fortawesome/free-solid-svg-icons'
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
 import {
     CCard,
     CCardBody,
@@ -32,14 +35,17 @@ const StokBarang = () => {
         success, setSuccess,
         info,
         openModalPaket,
-        dataBarang,
+        dataBarang, setDataBarang,
+        dataCabang, setDataCabang, 
+        setMaxInputCabang,
         loadDataBarang,
         currentUser,
-        dataKategoriBarang,
+        dataKategoriBarang, setDataKategoriBarang,
         loadDataKategoriBarang,
-        dataBarangNonPaket,
+        dataBarangNonPaket, setDataBarangNonPaket,
         input,
         inputPaket, setInputPaket,
+        inputCabang, setInputCabang,
         currentPaket, setCurrentPaket,
         details,
         currentStokBarang,
@@ -55,13 +61,25 @@ const StokBarang = () => {
         getCurrentUser,
         getStokBarangById,
         getDataKategoriBarang,
-        getDataBarangNonPaket
+        getDataBarangNonPaket,
+        addInput,
+        removeInput,
+        getDataCabang
     } = StokBarangHelper();
 
     useEffect(() => {
         getCurrentUser();
         getDataKategoriBarang();
         getDataBarangNonPaket();
+        getDataCabang();
+
+        return () => {
+            setDataBarang([]);
+            setDataCabang([]);
+            setDataKategoriBarang([]);
+            setDataBarangNonPaket([]);
+            setMaxInputCabang(0);
+        }
     }, []);
 
     return (
@@ -72,12 +90,12 @@ const StokBarang = () => {
                         <CCardHeader>Data Stok Barang</CCardHeader>
                         <CRow>
                             <CCol xs="6" md="6">
-                                {currentUser.hak_akses === 'administrator' || currentUser.hak_akses === 'admin gudang' ?
+                                {currentUser.hak_akses === 'admin gudang' ?
                                     <CButton color="success" onClick={() => setSuccess(!success)} className="ml-3 mt-2">Tambah Data</CButton>
                                     : null
                                 }
                                 <a href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/barang/stok-barang`} target="_blank" rel="noreferrer">
-                                    <CButton color="warning" className={currentUser.hak_akses === 'administrator' ? 'ml-1 mt-2' : 'ml-3 mt-2'}>
+                                    <CButton color="warning" className="ml-3 mt-2">
                                         Cetak Laporan
                                     </CButton>
                                 </a>
@@ -101,6 +119,14 @@ const StokBarang = () => {
                                     ((item, i) => (
                                         <td className="text-center">{i + 1}</td>
                                     )),
+                                    'kategori':
+                                    ((item, i) => (
+                                        <td className="text-center">{item.kategori.nama_kategori}</td>
+                                    )),
+                                    'berat':
+                                    ((item, i) => (
+                                        <td className="text-center">{item.berat}</td>
+                                    )),
                                     'harga_user':
                                     (item => (
                                         <td className="text-right">
@@ -113,14 +139,6 @@ const StokBarang = () => {
                                             Rp. {new Intl.NumberFormat(['ban', 'id']).format(item.harga_reseller)}
                                         </td>
                                     )),
-                                    'bjb':
-                                    (item => <td className="text-center">{item.bjb}</td>),
-                                    'lnu':
-                                    (item => <td className="text-center">{item.lnu}</td>),
-                                    'bjm':
-                                    (item => <td className="text-center">{item.bjm}</td>),
-                                    'tdc':
-                                    (item => <td className="text-center">{item.tdc}</td>),
                                     'total_pack':
                                     (item => <td className="text-center">{item.total_pack}</td>),
                                     'show_details':
@@ -147,7 +165,7 @@ const StokBarang = () => {
                                                 <CButton size="sm" color="info" onClick={() => getStokBarangById(item.id, 'view')}>
                                                     View Details
                                                 </CButton>
-                                                {currentUser.hak_akses === 'administrator' || currentUser.hak_akses === 'admin gudang' ?
+                                                {currentUser.hak_akses === 'admin gudang' ?
                                                     <>
                                                         <CButton size="sm" color="success" className="ml-1" onClick={() => getStokBarangById(item.id, 'update')}>
                                                             Update
@@ -205,7 +223,7 @@ const StokBarang = () => {
                                             <>
                                             <option value="">Pilih Salah Satu</option>
                                             {dataKategoriBarang.map(item => (
-                                                <option key={item.id} value={item.nama_kategori}>{item.nama_kategori}</option>
+                                                <option key={item.id} value={item.id}>{item.nama_kategori}</option>
                                             ))}
                                             </>
                                         }
@@ -230,40 +248,6 @@ const StokBarang = () => {
                         <CRow>
                             <CCol xs="12" md="6">
                                 <CFormGroup>
-                                    <CLabel htmlFor="bjb">Stok Banjarbaru</CLabel>
-                                    <CInput type="number" id="bjb" name="bjb" min="0" value={input.bjb} onChange={changeHandler} placeholder="Masukkan Stok Banjarbaru" />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="bjm">Stok Banjarmasin</CLabel>
-                                    <CInput type="number" id="bjm" name="bjm" min="0" value={input.bjm} onChange={changeHandler} placeholder="Masukkan Stok Banjarmasin" />
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-                        <CRow>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="lnu">Stok Landasan Ulin</CLabel>
-                                    <CInput type="number" id="lnu" name="lnu" min="0" value={input.lnu} onChange={changeHandler} placeholder="Masukkan Stok Landasan Ulin" />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="tdc">Stok TDC</CLabel>
-                                    <CInput type="number" id="tdc" name="tdc" min="0" value={input.tdc} onChange={changeHandler} placeholder="Masukkan Stok TDC" />
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-                        <CRow>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="total_pack">Total PCS Dalam 1 Pack</CLabel>
-                                    <CInput type="number" id="total_pack" min="0" name="total_pack" value={input.total_pack} onChange={changeHandler} placeholder="Masukkan Total PCS Dalam 1 Pack" />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
                                     <CLabel htmlFor="paket">Paket</CLabel>
                                     <CSelect custom name="paket" id="paket" value={input.paket} onChange={changeHandler} >
                                         <option value="">Pilih Salah Satu</option>
@@ -271,6 +255,92 @@ const StokBarang = () => {
                                         <option value="1">Ya</option>
                                     </CSelect>
                                 </CFormGroup>
+                            </CCol>
+                            <CCol xs="12" md="6">
+                                <CFormGroup>
+                                    <CLabel htmlFor="berat">Berat (gram)</CLabel>
+                                    <CInput type="number" id="berat" name="berat" value={input.berat} onChange={changeHandler} placeholder="Masukkan Berat Barang" />
+                                </CFormGroup>
+                            </CCol>
+                        </CRow>
+                        <CRow>
+                            <CCol>
+                                <CLabel htmlFor="set_stok">Set Stok</CLabel>
+                                <table className="table table-sm table-bordered">
+                                    <thead>
+                                        <tr className="text-center">
+                                            <th>No</th>
+                                            <th>Nama Cabang</th>
+                                            <th>Tersedia</th>
+                                            <th>Dapat Dijual</th>
+                                            <th width="5%">
+                                                <CButton color="info" size="sm" onClick={addInput}>
+                                                    <FontAwesomeIcon icon={faPlusCircle} />
+                                                </CButton>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {inputCabang.map((item, i) => (
+                                            <tr>
+                                                <td className="text-center">{i + 1}</td>
+                                                <td>
+                                                    <FormControl style={{ 
+                                                        minWidth: 120,
+                                                        maxWidth: 140
+                                                    }}>
+                                                        <Select
+                                                            labelId="cabang"
+                                                            id="cabang"
+                                                            name="cabang"
+                                                            value={inputCabang[i].id_cabang}
+                                                            onChange={(e) => {
+                                                                const val = [...inputCabang];
+                                                                val[i].id_cabang = e.target.value;
+                                                                setInputCabang(val);
+                                                            }}
+                                                        >
+                                                            {dataCabang.map((cabang) => (
+                                                                <MenuItem value={cabang.id}>{cabang.nama_cabang}</MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
+                                                </td>
+                                                <td>
+                                                    <TextField 
+                                                        id="stok-tersedia" 
+                                                        name="stok_tersedia" 
+                                                        type="number"
+                                                        value={inputCabang[i].stok_tersedia}
+                                                        onChange={(e) => {
+                                                            const val = [...inputCabang];
+                                                            val[i].stok_tersedia = e.target.value;
+                                                            setInputCabang(val);
+                                                        }}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <TextField 
+                                                        id="stok-dapat-dijual" 
+                                                        name="stok_dapat_dijual" 
+                                                        type="number"
+                                                        value={inputCabang[i].stok_dapat_dijual}
+                                                        onChange={(e) => {
+                                                            const val = [...inputCabang];
+                                                            val[i].stok_dapat_dijual = e.target.value;
+                                                            setInputCabang(val);
+                                                        }}
+                                                    />
+                                                </td>
+                                                <td className="text-center">
+                                                    <CButton color="danger" size="sm" onClick={() => removeInput(i)}>
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </CButton>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </CCol>
                         </CRow>
                     </CForm>
@@ -304,7 +374,7 @@ const StokBarang = () => {
                                 <CCol xs="12" md="6">
                                     <CFormGroup>
                                         <CLabel htmlFor="kategori">Kategori</CLabel>
-                                        <CInput type="text" id="kategori" name="kategori" value={currentStokBarang.kategori} onChange={changeHandler} placeholder="Masukkan Kategori" disabled={true} />
+                                        <CInput type="text" id="kategori" name="kategori" value={currentStokBarang.kategori.nama_kategori} onChange={changeHandler} placeholder="Masukkan Kategori" disabled={true} />
                                     </CFormGroup>                                
                                 </CCol>
                             </CRow>
@@ -328,27 +398,23 @@ const StokBarang = () => {
                                     <table className="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th className="text-center">Stok</th>
-                                                <th className="text-center">Jumlah</th>
+                                                <th className="text-center">Cabang</th>
+                                                <th className="text-center">Stok tersedia</th>
+                                                <th className="text-center">Stok dapat dijual</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Banjarbaru</td>
-                                                <td className="text-center">{currentStokBarang.bjb}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Banjarmasin</td>
-                                                <td className="text-center">{currentStokBarang.bjm}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Landasan Ulin</td>
-                                                <td className="text-center">{currentStokBarang.lnu}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Twincom Distribution Center</td>
-                                                <td className="text-center">{currentStokBarang.tdc}</td>
-                                            </tr>
+                                            {currentStokBarang.detail_stok_barang.length > 0 ? currentStokBarang.detail_stok_barang.map((barang) => (
+                                                <tr>
+                                                    <td>{barang.cabang.nama_cabang}</td>
+                                                    <td className="text-center">{barang.stok_tersedia}</td>
+                                                    <td className="text-center">{barang.stok_dapat_dijual}</td>
+                                                </tr>
+                                            )) : (
+                                                <tr>
+                                                    <td colSpan="3" className="text-center"><strong>Tidak ada detail stok</strong></td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </CCol>

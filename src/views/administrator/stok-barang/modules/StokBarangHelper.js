@@ -21,6 +21,11 @@ const StokBarangHelper = () => {
             _style: { textAlign: 'center' },
         },
         {
+            key: 'berat',
+            label: 'Berat',
+            _style: { textAlign: 'center' },
+        },
+        {
             key: 'harga_user',
             label: 'Harga User',
             _style: { textAlign: 'center' },
@@ -28,31 +33,6 @@ const StokBarangHelper = () => {
         {
             key: 'harga_reseller',
             label: 'Harga Reseller',
-            _style: { textAlign: 'center' },
-        },
-        {
-            key: 'bjb',
-            label: 'Stok BJB',
-            _style: { textAlign: 'center' },
-        },
-        {
-            key: 'bjm',
-            label: 'Stok BJM',
-            _style: { textAlign: 'center' },
-        },
-        {
-            key: 'lnu',
-            label: 'Stok Ulin',
-            _style: { textAlign: 'center' },
-        },
-        {
-            key: 'tdc',
-            label: 'Stok TDC',
-            _style: { textAlign: 'center' },
-        },
-        {
-            key: 'total_pack',
-            label: 'Total Pack',
             _style: { textAlign: 'center' },
         },
         {
@@ -68,8 +48,9 @@ const StokBarangHelper = () => {
     const [info, setInfo] = useState(false);
     const [openModalPaket, setOpenModalPaket] = useState(false);
     const [dataBarang, setDataBarang] = useState([]);
+    const [dataCabang, setDataCabang] = useState([]);
     const [loadDataBarang, setLoadDataBarang] = useState(true);
-    const [currentStokBarang, setCurrentStokBarang] = useState({});
+    const [currentStokBarang, setCurrentStokBarang] = useState([]);
     const [loadCurrentStokBarang, setLoadCurrentStokBarang] = useState(true);
     const [dataKategoriBarang, setDataKategoriBarang] = useState([]);
     const [loadDataKategoriBarang, setLoadDataKategoriBarang] = useState(true);
@@ -81,18 +62,20 @@ const StokBarangHelper = () => {
     const [input, setInput] = useState({
         nama_barang: '',
         kategori: '',
+        berat: '',
         harga_user: '',
         harga_reseller: '',
-        bjb: '',
-        bjm: '',
-        lnu: '',
-        tdc: '',
-        total_pack: 0,
         paket: ''
     });
     const [inputPaket, setInputPaket] = useState([
         { id_paket: '', id_barang: '' },
     ]);
+    const [maxInputCabang, setMaxInputCabang] = useState(0);
+    const [inputCabang, setInputCabang] = useState([{
+        id_cabang: '',
+        stok_tersedia: '',
+        stok_dapat_dijual: ''
+    }]);
     const [currentPaket, setCurrentPaket] = useState([{ nama_barang: '' }]);
     const [details, setDetails] = useState([]);
 
@@ -146,13 +129,9 @@ const StokBarangHelper = () => {
         setInput({
             nama_barang: '',
             kategori: '',
+            berat: '',
             harga_user: '',
             harga_reseller: '',
-            bjb: '',
-            bjm: '',
-            lnu: '',
-            tdc: '',
-            total_pack: 0,
             paket: ''
         });
     }
@@ -161,13 +140,9 @@ const StokBarangHelper = () => {
         setInput({
             nama_barang: '',
             kategori: '',
+            berat: '',
             harga_user: '',
             harga_reseller: '',
-            bjb: '',
-            bjm: '',
-            lnu: '',
-            tdc: '',
-            total_pack: 0,
             paket: ''
         });
 
@@ -210,6 +185,23 @@ const StokBarangHelper = () => {
         });
     }
 
+    const getDataCabang = async () => {
+        await axios.get(`${baseUrl}/cabang`, {
+            headers: {
+                'Accept': 'Application/json',
+                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
+            }
+        })
+        .then(response => {
+            const result = response.data.result;
+            setDataCabang(result);
+            setMaxInputCabang(result.length);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
     const getStokBarang = async () => {
         await axios.get(`${baseUrl}/stok-barang`, {
             headers: {
@@ -241,22 +233,28 @@ const StokBarangHelper = () => {
             if(actionModal === 'update') {
                 setInput({
                     nama_barang: result.nama_barang,
-                    kategori: result.kategori,
+                    kategori: result.id_kategori,
+                    berat: result.berat,
                     harga_user: result.harga_user,
                     harga_reseller: result.harga_reseller,
-                    bjb: result.bjb,
-                    bjm: result.bjm,
-                    lnu: result.lnu,
-                    tdc: result.tdc,
-                    total_pack: result.total_pack,  
                     paket: result.paket,      
                 });
+
+                let stok_cabang = [];
+                result.detail_stok_barang.forEach((detail) => {
+                    stok_cabang.push({
+                        id_cabang: detail.id_cabang,
+                        stok_tersedia: detail.stok_tersedia,
+                        stok_dapat_dijual: detail.stok_dapat_dijual
+                    })
+                });
+                setInputCabang(stok_cabang);
             }
 
             if(actionModal === 'paket') {
                 let value = [];
                 if(result.paket != null) {
-                    result.paket.map(item => {
+                    result.paket.map((item) => {
                         item.id_paket = result.id;
                         value.push(item);
                     });
@@ -378,17 +376,24 @@ const StokBarangHelper = () => {
             harga_reseller = input.harga_reseller;
         }
 
+        // validate input stok cabang
+        const stokCabang = Array.from(new Set(inputCabang.map((x) => x.id_cabang)))
+                            .map((id) => {
+                                return {
+                                    id_cabang: id, 
+                                    stok_tersedia: inputCabang.find((s) => s.id_cabang).stok_tersedia,
+                                    stok_dapat_dijual: inputCabang.find((s) => s.id_cabang).stok_dapat_dijual
+                                }
+                            });
+
         await axios.post(`${baseUrl}/stok-barang`, {
             nama_barang: input.paket == 1 ? `Paket ${input.nama_barang}` : input.nama_barang,
-            kategori: input.kategori,
+            id_kategori: input.kategori,
+            berat: input.berat,
             harga_user: harga_user,
             harga_reseller: harga_reseller,
-            bjb: input.bjb,
-            bjm: input.bjm,
-            lnu: input.lnu,
-            tdc: input.tdc,
-            total_pack: input.total_pack,
-            paket: input.paket      
+            paket: input.paket,   
+            detail: stokCabang
         }, 
         {
             headers: {
@@ -415,7 +420,7 @@ const StokBarangHelper = () => {
         closeModalHandler('submit');
     }
 
-    const postDataPaket = async id => {
+    const postDataPaket = async () => {
         await axios.post(`${baseUrl}/paket-barang`, {
             payload: inputPaket
         },
@@ -445,7 +450,7 @@ const StokBarangHelper = () => {
         setOpenModalPaket(!openModalPaket);
     }
 
-    const updateStokBarang = async id => {
+    const updateStokBarang = async (id) => {
         let harga_user;
         let harga_reseller;
         if(input.harga_user != currentStokBarang.harga_user) {
@@ -472,17 +477,24 @@ const StokBarangHelper = () => {
             harga_reseller = input.harga_reseller;
         }
 
+        // validate input cabang
+        const stokCabang = Array.from(new Set(inputCabang.map((x) => x.id_cabang)))
+                            .map((id) => {
+                                return {
+                                    id_cabang: id, 
+                                    stok_tersedia: inputCabang.find((s) => s.id_cabang).stok_tersedia,
+                                    stok_dapat_dijual: inputCabang.find((s) => s.id_cabang).stok_dapat_dijual
+                                }
+                            });
+
         await axios.put(`${baseUrl}/stok-barang/${id}`, {
             nama_barang: input.paket == 1 ? `Paket ${input.nama_barang}` : input.nama_barang,
-            kategori: input.kategori,
+            id_kategori: input.kategori,
+            berat: input.berat,
             harga_user: harga_user,
             harga_reseller: harga_reseller,
-            bjb: input.bjb,
-            bjm: input.bjm,
-            lnu: input.lnu,
-            tdc: input.tdc,
-            total_pack: input.total_pack,
-            paket: input.paket      
+            paket: input.paket,
+            detail: stokCabang
         },
         {
             headers: {
@@ -509,7 +521,7 @@ const StokBarangHelper = () => {
         closeModalHandler('update');
     }
 
-    const deleteStokBarang = async id => {
+    const deleteStokBarang = async (id) => {
         await axios.delete(`${baseUrl}/stok-barang/${id}`, {
             headers: {
                 'Accept': 'Application/json',
@@ -557,20 +569,41 @@ const StokBarangHelper = () => {
         });
     }
 
+    const addInput = () => {
+        if(inputCabang.length < maxInputCabang) {
+            const value = [...inputCabang];
+            value.push({
+                id_cabang: '',
+                stok_tersedia: '',
+                stok_dapat_dijual: ''
+            });
+            setInputCabang(value);
+        }
+    }
+
+    const removeInput = (index) => {
+        const value = [...inputCabang];
+        value.splice(index, 1);
+        setInputCabang(value);
+    }
+
     return {
         fields,
         success, setSuccess,
         info,
         openModalPaket,
-        dataBarang,
+        dataBarang, setDataBarang,
+        dataCabang, setDataCabang,
+        setMaxInputCabang,
         loadDataBarang,
         currentUser,
-        dataKategoriBarang,
+        dataKategoriBarang, setDataKategoriBarang,
         loadDataKategoriBarang,
-        dataBarangNonPaket,
+        dataBarangNonPaket, setDataBarangNonPaket,
         loadDataBarangNonPaket,
         input,
         inputPaket, setInputPaket,
+        inputCabang, setInputCabang,
         currentPaket, setCurrentPaket,
         details,
         currentStokBarang,
@@ -587,7 +620,10 @@ const StokBarangHelper = () => {
         getCurrentUser,
         getStokBarangById,
         getDataKategoriBarang,
-        getDataBarangNonPaket
+        getDataBarangNonPaket,
+        addInput,
+        removeInput,
+        getDataCabang,
     }
 }
 

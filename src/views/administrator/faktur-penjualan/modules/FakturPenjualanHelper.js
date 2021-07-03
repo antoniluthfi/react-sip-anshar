@@ -23,8 +23,8 @@ const FakturPenjualanHelper = () => {
             _style: { textAlign: 'center' },
         },
         {
-            key: 'no_bukti',
-            label: 'Nomor Bukti',
+            key: 'kode_pesanan',
+            label: 'Kode Pesanan',
             _style: { textAlign: 'center' },
         },
         {
@@ -120,7 +120,7 @@ const FakturPenjualanHelper = () => {
             setNominalVisibility('d-none');
         }
 
-        if(e.target.name === 'nominal' && e.target.value != '') {
+        if(e.target.name === 'nominal' && e.target.value) {
             setTerhutangVisibility('d-block');
         }
     }
@@ -143,18 +143,14 @@ const FakturPenjualanHelper = () => {
 
     const submitHandler = action => {
         if(action === 'update') {
-            updateDataFakturPenjualan(currentDataFaktur.no_bukti);
+            updateDataFakturPenjualan(currentDataFaktur.no_faktur);
         } else if(action === 'lunasi') {
             postDataFaktur();
         }
     }
 
     const getCurrentUser = async () => {
-        if(currentUser.hak_akses === 'administrator') {
-            getDataFakturPenjualan(`${baseUrl}/faktur-penjualan`);
-        } else {
-            getDataFakturPenjualan(`${baseUrl}/faktur-penjualan/marketing/${currentUser.id}`);
-        }
+        getDataFakturPenjualan(`${baseUrl}/faktur-penjualan/marketing/${currentUser.id}`);
     }
 
     const getDataFakturPenjualan = async url => {
@@ -174,8 +170,8 @@ const FakturPenjualanHelper = () => {
         setLoadDataFaktur(false);
     }
 
-    const getDataFakturPenjualanById = async (no_bukti, actionModal) => {
-        await axios.get(`${baseUrl}/faktur-penjualan/${no_bukti}`, {
+    const getDataFakturPenjualanById = async (no_faktur, actionModal) => {
+        await axios.get(`${baseUrl}/faktur-penjualan/${no_faktur}`, {
             headers: { 
                 'Accept': 'Application/json',
                 'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
@@ -189,15 +185,15 @@ const FakturPenjualanHelper = () => {
                 setInput({
                     id_bank: result.id_bank,
                     metode_pembayaran: result.metode_pembayaran,
-                    nominal: result.nominal == null ? '' : `Rp. ${result.nominal}`,
-                    terhutang: result.terhutang == null ? '' : result.terhutang,        
+                    nominal: !result.nominal ? '' : `Rp. ${result.nominal}`,
+                    terhutang: !result.terhutang ? '' : result.terhutang,
                 });
             } else if(actionModal === 'lunasi') {
                 setInput({
                     id_bank: result.id_bank,
                     metode_pembayaran: result.metode_pembayaran,
                     nominal: `Rp. ${result.terhutang}`,
-                    terhutang: result.terhutang == null ? '' : result.terhutang,        
+                    terhutang: !result.terhutang ? '' : result.terhutang,        
                 });
             }
         })
@@ -226,7 +222,7 @@ const FakturPenjualanHelper = () => {
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    deleteDataFakturPenjualan(no_bukti);
+                    deleteDataFakturPenjualan(no_faktur);
                 }
             });
         }
@@ -251,12 +247,12 @@ const FakturPenjualanHelper = () => {
 
     const postDataFaktur = async () => {
         let message = '';
-        if(input.metode_pembayaran == null) message = 'Metode pembayaran harus dipilih salah satu!';
-        else if(input.metode_pembayaran == 'Transfer' && input.id_bank == null) message = 'Bank harus dipilih salah satu!';
-        else if(input.dp == null) message = 'Metode pelunasan harus dipilih salah satu!';
-        else if(input.dp == 'JT' && input.nominal == '') message = 'Nominal harus diisi!';
+        if(!input.metode_pembayaran) message = 'Metode pembayaran harus dipilih salah satu!';
+        else if(input.metode_pembayaran === 'Transfer' && !input.id_bank) message = 'Bank harus dipilih salah satu!';
+        else if(!input.dp) message = 'Metode pelunasan harus dipilih salah satu!';
+        else if(input.dp === 'JT' && !input.nominal) message = 'Nominal harus diisi!';
 
-        if(message != '') {
+        if(message) {
             Swal.fire(
                 'Gagal',
                 message,
@@ -308,14 +304,14 @@ const FakturPenjualanHelper = () => {
         }
     }
 
-    const updateDataFakturPenjualan = async no_bukti => {
+    const updateDataFakturPenjualan = async (no_faktur) => {
         let message = '';
-        if(input.metode_pembayaran == null) message = 'Metode pembayaran harus dipilih salah satu!';
-        else if(input.metode_pembayaran == 'Transfer' && input.id_bank == null) message = 'Bank harus dipilih salah satu!';
-        else if(input.dp == null) message = 'Metode pelunasan harus dipilih salah satu!';
-        else if(input.dp == 'JT' && input.nominal == '') message = 'Nominal harus diisi!';
+        if(!input.metode_pembayaran) message = 'Metode pembayaran harus dipilih salah satu!';
+        else if(input.metode_pembayaran === 'Transfer' && !input.id_bank) message = 'Bank harus dipilih salah satu!';
+        else if(!input.dp) message = 'Metode pelunasan harus dipilih salah satu!';
+        else if(input.dp === 'JT' && !input.nominal) message = 'Nominal harus diisi!';
 
-        if(message != '') {
+        if(message) {
             Swal.fire(
                 'Gagal',
                 message,
@@ -335,7 +331,7 @@ const FakturPenjualanHelper = () => {
                 nominal = currentDataFaktur.pesanan_penjualan.total_harga;
             }
     
-            await axios.put(`${baseUrl}/faktur-penjualan/${no_bukti}`, {
+            await axios.put(`${baseUrl}/faktur-penjualan/${no_faktur}`, {
                 id_bank: input.id_bank,
                 metode_pembayaran: input.metode_pembayaran,
                 nominal: nominal,
@@ -348,11 +344,7 @@ const FakturPenjualanHelper = () => {
                 }
             })
             .then(response => {
-                if(currentUser.hak_akses === 'administrator') {
-                    getDataFakturPenjualan(`${baseUrl}/faktur-penjualan`);
-                } else {
-                    getDataFakturPenjualan(`${baseUrl}/faktur-penjualan/marketing/${currentUser.id}`);
-                }
+                getDataFakturPenjualan(`${baseUrl}/faktur-penjualan/marketing/${currentUser.id}`);
     
                 Swal.fire(
                     'Berhasil',
@@ -372,8 +364,8 @@ const FakturPenjualanHelper = () => {
         }
     }
 
-    const deleteDataFakturPenjualan = async no_bukti => {
-        await axios.put(`${baseUrl}/faktur-penjualan/${no_bukti}`, {
+    const deleteDataFakturPenjualan = async (no_faktur) => {
+        await axios.put(`${baseUrl}/faktur-penjualan/${no_faktur}`, {
             id_bank: '',
             metode_pembayaran: '',
             nominal: '',
@@ -386,11 +378,7 @@ const FakturPenjualanHelper = () => {
             }
         })
         .then(response => {
-            if(currentUser.hak_akses === 'administrator') {
-                getDataFakturPenjualan(`${baseUrl}/faktur-penjualan`);
-            } else {
-                getDataFakturPenjualan(`${baseUrl}/faktur-penjualan/marketing/${currentUser.id}`);
-            }
+            getDataFakturPenjualan(`${baseUrl}/faktur-penjualan/marketing/${currentUser.id}`);
 
             Swal.fire(
                 'Berhasil',

@@ -1,19 +1,15 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import LoadingToRedirect from './LoadingToRedirect';
 
-const ProtectedRoute = ({ component:Component, ...rest }) => {
-    const token = localStorage.getItem('sip-token');
+const ProtectedRoute = ({ children, ...rest }) => {
+    const user = useSelector(state => state.currentUser);
 
-    return (
-        <Route {...rest} render={
-            props => {
-                if(token && token !== '') {
-                    return <Component {...props} />
-                } else {
-                    return <Redirect to="/login" />
-                }
-            }
-        } />
+    return user && user.name ? (
+        <Route {...rest} render={() => children} />
+    ) : (
+        <LoadingToRedirect />
     )
 }
 

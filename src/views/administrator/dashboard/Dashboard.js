@@ -4,10 +4,7 @@ const WidgetsDropdown = lazy(() => import('./WidgetsDropdown.js'));
 
 const Dashboard = () => {
     return (
-        <>
-            <h3></h3>
-            <WidgetsDropdown />
-        </>
+        <WidgetsDropdown />
     )
 }
 

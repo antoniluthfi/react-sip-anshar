@@ -1,16 +1,17 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const GuestRoute = ({ component:Component, ...rest }) => {
-    const token = localStorage.getItem('sip-token');
+    const user = useSelector(state => state.currentUser);
 
     return (
         <Route {...rest} render={
             props => {
-                if(!token || token === '') {
+                if(!user) {
                     return <Component {...props} />
                 } else {
-                    return <Redirect to="/dashboard-administrator" />
+                    return <Redirect to="/dashboard" />
                 }
             }
         } />

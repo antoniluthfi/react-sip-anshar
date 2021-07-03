@@ -13,28 +13,22 @@ import {
     CLabel
 } from '@coreui/react'
 
-import axios from 'axios';
-
 // sidebar nav config
-import administratorNavigation from './navigation/administrator';
 import adminGudangNavigation from './navigation/adminGudang';
 import marketingNavigation from './navigation/marketing'; 
 
 const TheSidebar = () => {
     const dispatch = useDispatch()
-    const show = useSelector(state => state.sidebarShow.sidebarShow);
     const currentUser = useSelector(state => state.currentUser);
-    console.log(currentUser);
-    const { hak_akses } = currentUser;
+    const show = useSelector(state => state.sidebarShow.sidebarShow);
 
     const [navigation, setNavigation] = useState([]);
 
     const getCurrentUser = async () => {
-        if(hak_akses === 'administrator') {
-            setNavigation(administratorNavigation);
-        } else if(hak_akses === 'admin gudang') {
+        const user = await currentUser;
+        if(user.hak_akses === 'admin gudang') {
             setNavigation(adminGudangNavigation);
-        } else if(hak_akses === 'marketing') {
+        } else if(user.hak_akses === 'marketing') {
             setNavigation(marketingNavigation);
         }
     }
