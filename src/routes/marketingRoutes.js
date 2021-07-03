@@ -1,20 +1,20 @@
 import { lazy } from 'react';
 
-const Dashboard = lazy(() => import('../views/administrator/dashboard/Dashboard'));
-const StokBarang = lazy(() => import('../views/administrator/stok-barang/StokBarang'));
-const Cabang = lazy(() => import('../views/administrator/data-cabang/Cabang'));
-const Bank = lazy(() => import('../views/administrator/data-bank/DataBank'));
-const KategoriBarang = lazy(() => import('../views/administrator/kategori-barang/KategoriBarang'));
-const Marketing = lazy(() => import('../views/administrator/karyawan/Marketing'));
-const DataAdminGudang = lazy(() => import('../views/administrator/karyawan/DataAdminGudang'));
-const DataPurchasing = lazy(() => import('../views/administrator/karyawan/DataPurchasing'));
-const DataUser = lazy(() => import('../views/administrator/pelanggan/DataUser'));
-const DataReseller = lazy(() => import('../views/administrator/pelanggan/DataReseller'));
-const SyaratPembayaran = lazy(() => import('../views/administrator/syarat-pembayaran/SyaratPembayaran'));
-const DataEkspedisi = lazy(() => import('../views/administrator/data-ekspedisi/DataEkspedisi'));
-const PesananPenjualan = lazy(() => import('../views/administrator/pesanan-penjualan/PesananPenjualan'));
-const PengirimanPesanan = lazy(() => import('../views/administrator/pengiriman-pesanan/PengirimanPesanan'));
-const FakturPenjualan = lazy(() => import('../views/administrator/faktur-penjualan/FakturPenjualan'));
+const Dashboard = lazy(() => import('../views/tstore/dashboard/Dashboard'));
+const StokBarang = lazy(() => import('../views/tstore/stok-barang/StokBarang'));
+const Cabang = lazy(() => import('../views/tstore/data-cabang/Cabang'));
+const Bank = lazy(() => import('../views/tstore/data-bank/DataBank'));
+const KategoriBarang = lazy(() => import('../views/tstore/kategori-barang/KategoriBarang'));
+const Marketing = lazy(() => import('../views/tstore/karyawan/Marketing'));
+const DataAdminGudang = lazy(() => import('../views/tstore/karyawan/DataAdminGudang'));
+const DataPurchasing = lazy(() => import('../views/tstore/karyawan/DataPurchasing'));
+const DataUser = lazy(() => import('../views/tstore/pelanggan/DataUser'));
+const DataReseller = lazy(() => import('../views/tstore/pelanggan/DataReseller'));
+const SyaratPembayaran = lazy(() => import('../views/tstore/syarat-pembayaran/SyaratPembayaran'));
+const DataEkspedisi = lazy(() => import('../views/tstore/data-ekspedisi/DataEkspedisi'));
+const PesananPenjualan = lazy(() => import('../views/tstore/pesanan-penjualan/PesananPenjualan'));
+const PengirimanPesanan = lazy(() => import('../views/tstore/pengiriman-pesanan/PengirimanPesanan'));
+const FakturPenjualan = lazy(() => import('../views/tstore/faktur-penjualan/FakturPenjualan'));
 
 const marketingRoutes = [
   { path: '/', exact: true, name: 'Home' },

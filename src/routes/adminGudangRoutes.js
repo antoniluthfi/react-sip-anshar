@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
-const Dashboard = lazy(() => import('../views/administrator/dashboard/Dashboard'));
-const StokBarang = lazy(() => import('../views/administrator/stok-barang/StokBarang'));
+const Dashboard = lazy(() => import('../views/tstore/dashboard/Dashboard'));
+const StokBarang = lazy(() => import('../views/tstore/stok-barang/StokBarang'));
 
 const adminGudangRoutes = [
   { path: '/', exact: true, name: 'Home' },
