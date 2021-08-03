@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import KategoriBarang from '../KategoriBarang';
 
 const KategoriBarangHelper = () => {
     const baseUrl = process.env.REACT_APP_LARAVEL_URL;
@@ -276,8 +275,8 @@ const KategoriBarangHelper = () => {
     return {
         fields,
         success, setSuccess,
-        dataKategori,
-        loadDataKategori,
+        dataKategori, setDataKategori,
+        loadDataKategori, setLoadDataKategori,
         details,
         input, setInput,
         modalTitle,

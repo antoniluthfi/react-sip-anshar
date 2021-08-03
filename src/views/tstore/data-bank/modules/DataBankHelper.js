@@ -238,8 +238,8 @@ const DataBankHelper = () => {
     return {
         fields,
         success, setSuccess, 
-        dataBank,
-        loadDataBank,
+        dataBank, setDataBank,
+        loadDataBank, setLoadDataBank,
         currentDataBank,
         loadCurrentDataBank,
         modalTitle,

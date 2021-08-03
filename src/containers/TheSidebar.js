@@ -16,6 +16,8 @@ import {
 // sidebar nav config
 import adminGudangNavigation from './navigation/adminGudang';
 import marketingNavigation from './navigation/marketing'; 
+import adminTscNavigation from './navigation/adminTsc'; 
+import teknisiNavigation from './navigation/teknisi'; 
 
 const TheSidebar = () => {
     const dispatch = useDispatch()
@@ -26,15 +28,32 @@ const TheSidebar = () => {
 
     const getCurrentUser = async () => {
         const user = await currentUser;
-        if(user.hak_akses === 'admin gudang') {
-            setNavigation(adminGudangNavigation);
-        } else if(user.hak_akses === 'marketing') {
-            setNavigation(marketingNavigation);
+
+        switch (user.hak_akses) {
+            case 'admin gudang':
+                setNavigation(adminGudangNavigation);
+                break;
+            case 'marketing':
+                setNavigation(marketingNavigation);
+                break;
+            case 'admin tsc':
+                setNavigation(adminTscNavigation);
+                break;
+            case 'teknisi':
+                setNavigation(teknisiNavigation);
+                break;
+            default:
+                setNavigation([]);
+                break;
         }
     }
 
     useEffect(() => {
         getCurrentUser();
+
+        return () => {
+            setNavigation([]);
+        }
     }, []);
 
     return (

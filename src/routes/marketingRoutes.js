@@ -7,7 +7,6 @@ const Bank = lazy(() => import('../views/tstore/data-bank/DataBank'));
 const KategoriBarang = lazy(() => import('../views/tstore/kategori-barang/KategoriBarang'));
 const Marketing = lazy(() => import('../views/tstore/karyawan/Marketing'));
 const DataAdminGudang = lazy(() => import('../views/tstore/karyawan/DataAdminGudang'));
-const DataPurchasing = lazy(() => import('../views/tstore/karyawan/DataPurchasing'));
 const DataUser = lazy(() => import('../views/tstore/pelanggan/DataUser'));
 const DataReseller = lazy(() => import('../views/tstore/pelanggan/DataReseller'));
 const SyaratPembayaran = lazy(() => import('../views/tstore/syarat-pembayaran/SyaratPembayaran'));
@@ -31,7 +30,6 @@ const marketingRoutes = [
   { path: '/master-data/karyawan', name: 'Karyawan', exact: true },
   { path: '/master-data/karyawan/data-marketing', name: 'Data Marketing', component: Marketing },
   { path: '/master-data/karyawan/data-admin-gudang', name: 'Data Admin Gudang', component: DataAdminGudang },
-  { path: '/master-data/karyawan/data-purchasing', name: 'Data Purchasing', component: DataPurchasing },
 
   { path: '/master-data/pelanggan', name: 'Pelanggan', exact: true },
   { path: '/master-data/pelanggan/data-user', name: 'Data User', component: DataUser },

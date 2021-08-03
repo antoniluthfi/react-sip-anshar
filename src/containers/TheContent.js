@@ -5,11 +5,13 @@ import {
     Switch
 } from 'react-router-dom'
 import { CContainer, CFade } from '@coreui/react'
+import { useSelector } from 'react-redux'
 
 // routes config
 import adminGudangRoutes from '../routes/adminGudangRoutes';
 import marketingRoutes from '../routes/marketingRoutes';
-import axios from 'axios';
+import adminTscRoutes from '../routes/adminTscRoutes';
+import teknisiRoutes from '../routes/teknisiRoutes';
   
 const loading = (
     <div className="pt-3 text-center">
@@ -18,31 +20,38 @@ const loading = (
 )
 
 const TheContent = () => {
+    const currentUser = useSelector(state => state.currentUser);
+
     const [routes, setRoutes] = useState([]);
 
     const getCurrentUser = async () => {
-        await axios.get(`${process.env.REACT_APP_LARAVEL_URL}/user/my/profile`, {
-            headers: {
-                'Accept': 'Application/json',
-                'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
-            }
-        })
-        .then(response => {
-            const result = response.data.result;
-            if(result.hak_akses === 'admin gudang') {
+        const user = await currentUser;
+
+        switch (user.hak_akses) {
+            case 'admin gudang':
                 setRoutes(adminGudangRoutes);
-            } else if(result.hak_akses === 'marketing') {
+                break;
+            case 'marketing':
                 setRoutes(marketingRoutes);
-            }
-        })
-        .catch(error => {
-            localStorage.clear();
-            window.location.reload(true);
-        });
+                break;
+            case 'admin tsc':
+                setRoutes(adminTscRoutes);
+                break;
+            case 'teknisi':
+                setRoutes(teknisiRoutes);
+                break;
+            default:
+                setRoutes([]);
+                break;
+        }
     }
 
     useEffect(() => {
         getCurrentUser();
+
+        return () => {
+            setRoutes([]);
+        }
     }, []);
 
     return (

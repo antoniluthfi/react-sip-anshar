@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import DataPurchasing from '../DataPurchasing';
 
-const Marketing = () => {
+const DataAdminGudangHelper = () => {
     const baseUrl = process.env.REACT_APP_LARAVEL_URL;
     const fields = [
         {
@@ -107,7 +106,7 @@ const Marketing = () => {
     }
 
     const getDataUser = async () => {
-        await axios.get(`${baseUrl}/user/role/marketing`, {
+        await axios.get(`${baseUrl}/user/role/admin gudang`, {
             headers: {
                 'Accept': 'Application/json',
                 'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
@@ -200,7 +199,7 @@ const Marketing = () => {
             name: input.name,
             email: input.email,
             nomorhp: input.nomorhp,
-            hak_akses: 'marketing',
+            hak_akses: 'admin gudang',
             alamat: input.alamat,
             id_cabang: input.id_cabang,
             password: input.name
@@ -298,10 +297,10 @@ const Marketing = () => {
         buttonSubmitName,
         buttonVisibility,
         modalTitle,
-        dataUser,
-        loadDataUser,
-        dataCabang,
-        loadDataCabang,
+        dataUser, setDataUser,
+        loadDataUser, setLoadDataUser,
+        dataCabang, setDataCabang,
+        loadDataCabang, setLoadDataCabang,
         formDisabled,
         input,
         details,
@@ -314,4 +313,4 @@ const Marketing = () => {
     }
 }
 
-export default Marketing;
+export default DataAdminGudangHelper;

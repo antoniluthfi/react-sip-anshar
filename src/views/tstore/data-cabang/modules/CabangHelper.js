@@ -289,8 +289,8 @@ const CabangHelper = () => {
     return {
         fields,
         success, setSuccess,
-        dataCabang,
-        loadDataCabang,
+        dataCabang, setDataCabang,
+        loadDataCabang, setLoadDataCabang,
         details,
         input,
         modalTitle,

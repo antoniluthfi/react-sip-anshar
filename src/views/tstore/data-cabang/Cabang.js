@@ -1,31 +1,22 @@
 import React, { useEffect } from 'react';
 import CabangHelper from './modules/CabangHelper';
+import TableCabang from './modules/Table';
+import ModalCabang from './modules/Modal';
 import {
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CDataTable,
     CRow,
     CButton,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CForm,
-    CFormGroup,
-    CLabel,
-    CInput,
-    CModalFooter,
-    CCollapse
 } from '@coreui/react';  
 
 const Cabang = () => {
     const {
         fields,
         success, setSuccess,
-        dataCabang,
-        loadDataCabang,
+        dataCabang, setDataCabang,
+        loadDataCabang, setLoadDataCabang,
         details,
         input,
         modalTitle,
@@ -43,6 +34,11 @@ const Cabang = () => {
 
     useEffect(() => {
         getDataCabang();
+
+        return () => {
+            setDataCabang([]);
+            setLoadDataCabang(true);
+        }
     }, [])
 
     return (
@@ -57,54 +53,13 @@ const Cabang = () => {
                             </CCol>
                         </CRow>
                         <CCardBody>
-                            <CDataTable
-                                items={dataCabang}
+                            <TableCabang 
                                 fields={fields}
-                                striped
-                                sorter
-                                hover
-                                tableFilter
-                                noItemsView={loadDataCabang ? {noItems: 'Get data'} : {noResults: 'Not found', noItems: 'Empty'}}
-                                loading={loadDataCabang}    
-                                itemsPerPageSelect
-                                itemsPerPage={5}
-                                pagination
-                                scopedSlots = {{
-                                    'show_details':
-                                    (item, index)=>{
-                                        return (
-                                        <td className="py-2">
-                                            <CButton
-                                                color="primary"
-                                                variant="outline"
-                                                shape="square"
-                                                size="sm"
-                                                onClick={()=>{toggleDetails(index)}}
-                                            >
-                                                {details.includes(index) ? 'Hide' : 'Show'}
-                                            </CButton>
-                                        </td>
-                                        )
-                                    },
-                                    'details':
-                                        (item, index)=>{
-                                        return (
-                                        <CCollapse show={details.includes(index)}>
-                                            <CCardBody>
-                                                <CButton size="sm" color="info" onClick={() => getDataCabangById(item.id, 'view')}>
-                                                    View Details
-                                                </CButton>
-                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataCabangById(item.id, 'update')}>
-                                                    Update
-                                                </CButton>
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataCabangById(item.id, 'delete')}>
-                                                    Delete
-                                                </CButton>         
-                                            </CCardBody>
-                                        </CCollapse>
-                                        )
-                                    }
-                                }}
+                                dataCabang={dataCabang}
+                                loadDataCabang={loadDataCabang}
+                                details={details}
+                                toggleDetails={toggleDetails}
+                                getDataCabangById={getDataCabangById}
                             />
                         </CCardBody>
                     </CCard>
@@ -112,60 +67,18 @@ const Cabang = () => {
             </CRow>
 
             {/* add, edit data */}
-            <CModal 
-                show={success} 
-                onClose={() => closeModalHandler(buttonSubmitName.toLowerCase())}
+            <ModalCabang 
+                success={success}
+                input={input}
+                modalTitle={modalTitle}
+                buttonSubmitName={buttonSubmitName}
+                buttonVisibility={buttonVisibility}
+                formDisabled={formDisabled}
                 color={color}
-                closeOnBackdrop={false}
-            >
-                <CModalHeader closeButton>
-                    <CModalTitle>{modalTitle}</CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                    <CForm action="" method="post">
-                        <CRow>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="nama-cabang">Nama Cabang</CLabel>
-                                    <CInput type="text" id="nama-cabang" name="nama_cabang" value={input.nama_cabang} onChange={changeHandler} placeholder="Masukkan Nama Cabang" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="singkatan">Singkatan</CLabel>
-                                    <CInput type="text" id="singkatan" name="singkatan" value={input.singkatan} onChange={changeHandler} placeholder="Masukkan Singkatan Nama" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-                        <CRow>
-                            <CCol xs="12" lg="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="email">Email</CLabel>
-                                    <CInput type="email" id="email" name="email" value={input.email} onChange={changeHandler} placeholder="Masukkan Email" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" lg="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="nomorhp">Nomor HP</CLabel>
-                                    <CInput type="text" id="nomorhp" name="nomorhp" value={input.nomorhp} onChange={changeHandler} placeholder="Masukkan Nomor HP" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-                        <CRow>
-                            <CCol xs="12" md="12">
-                                <CFormGroup>
-                                    <CLabel htmlFor="alamat">Alamat</CLabel>
-                                    <CInput type="text" id="alamat" name="alamat" value={input.alamat} onChange={changeHandler} placeholder="Masukkan Alamat" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-                    </CForm>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton color="success" className={buttonVisibility} onClick={() => submitHandler(buttonSubmitName.toLocaleLowerCase())}>{buttonSubmitName}</CButton>{' '}
-                    <CButton color="secondary" className={buttonVisibility} onClick={() => closeModalHandler(buttonSubmitName.toLowerCase())}>Cancel</CButton>
-                </CModalFooter>
-            </CModal>
+                changeHandler={changeHandler}
+                closeModalHandler={closeModalHandler}
+                submitHandler={submitHandler}
+            />
         </>
     )
 }

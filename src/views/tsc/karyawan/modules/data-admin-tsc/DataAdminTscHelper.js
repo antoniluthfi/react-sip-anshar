@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import DataPurchasing from '../DataPurchasing';
 
-const DataPurchasingHelper = () => {
+const DataAdminTscHelper = () => {
     const baseUrl = process.env.REACT_APP_LARAVEL_URL;
     const fields = [
         {
@@ -47,8 +46,6 @@ const DataPurchasingHelper = () => {
 
     const [success, setSuccess] = useState(false);
     const [color, setColor] = useState('success');
-    const [buttonSubmitName, setButtonSubmitName] = useState('Submit');
-    const [buttonVisibility, setButtonVisibility] = useState('d-inline');
     const [modalTitle, setModalTitle] = useState('Tambah Data');
     const [dataUser, setDataUser] = useState([]);
     const [loadDataUser, setLoadDataUser] = useState(true);
@@ -56,6 +53,8 @@ const DataPurchasingHelper = () => {
     const [loadCurrentDataUser, setLoadCurrentDataUser] = useState(true);
     const [dataCabang, setDataCabang] = useState([]);
     const [loadDataCabang, setLoadDataCabang] = useState(true);
+    const [buttonSubmitName, setButtonSubmitName] = useState('Submit');
+    const [buttonVisibility, setButtonVisibility] = useState('d-inline');
     const [formDisabled, setFormDisabled] = useState(false);
     const [input, setInput] = useState({
         name: '',
@@ -107,7 +106,7 @@ const DataPurchasingHelper = () => {
     }
 
     const getDataUser = async () => {
-        await axios.get(`${baseUrl}/user/role/purchasing`, {
+        await axios.get(`${baseUrl}/user/role/admin tsc`, {
             headers: {
                 'Accept': 'Application/json',
                 'Authorization': `Bearer ${localStorage.getItem('sip-token')}`
@@ -200,7 +199,7 @@ const DataPurchasingHelper = () => {
             name: input.name,
             email: input.email,
             nomorhp: input.nomorhp,
-            hak_akses: 'purchasing',
+            hak_akses: 'admin tsc',
             alamat: input.alamat,
             id_cabang: input.id_cabang,
             password: input.name
@@ -298,10 +297,10 @@ const DataPurchasingHelper = () => {
         buttonSubmitName,
         buttonVisibility,
         modalTitle,
-        dataUser,
-        loadDataUser,
-        dataCabang,
-        loadDataCabang,
+        dataUser, setDataUser,
+        loadDataUser, setLoadDataUser,
+        dataCabang, setDataCabang,
+        loadDataCabang, setLoadDataCabang,
         formDisabled,
         input,
         details,
@@ -314,4 +313,4 @@ const DataPurchasingHelper = () => {
     }
 }
 
-export default DataPurchasingHelper;
+export default DataAdminTscHelper;

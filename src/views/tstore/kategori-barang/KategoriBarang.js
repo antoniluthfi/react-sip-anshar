@@ -1,42 +1,28 @@
 import React, { useEffect } from 'react';
 import KategoriBarangHelper from './modules/KategoriBarangHelper';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import TableKategoriBarang from './modules/Table';
+import ModalKategoriBarang from './modules/Modal';
 import {
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CDataTable,
     CRow,
     CButton,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CForm,
-    CFormGroup,
-    CLabel,
-    CInput,
-    CModalFooter,
-    CCollapse
 } from '@coreui/react';  
 
 const KategoriBarang = () => {
     const {
         fields,
         success, setSuccess,
-        dataKategori,
-        loadDataKategori,
+        dataKategori, setDataKategori,
+        loadDataKategori, setLoadDataKategori,
         details,
-        input, setInput,
+        input, 
         modalTitle,
         buttonSubmitName,
         buttonVisibility,
-        formDisabled,
         color,
-        purchasingOptions,
-        currentPurchasing, setCurrentPurchasing,
         toggleDetails,
         changeHandler,
         closeModalHandler,
@@ -49,6 +35,11 @@ const KategoriBarang = () => {
     useEffect(() => {
         getDataKategori();
         getPurchasing();
+
+        return () => {
+            setDataKategori([]);
+            setLoadDataKategori(true);
+        }
     }, [])
 
     return (
@@ -63,66 +54,13 @@ const KategoriBarang = () => {
                             </CCol>
                         </CRow>
                         <CCardBody>
-                            <CDataTable
-                                items={dataKategori}
+                            <TableKategoriBarang 
                                 fields={fields}
-                                striped
-                                sorter
-                                hover
-                                tableFilter
-                                noItemsView={loadDataKategori ? {noItems: 'Get data'} : {noResults: 'Not found', noItems: 'Empty'}}
-                                loading={loadDataKategori}    
-                                itemsPerPageSelect
-                                itemsPerPage={5}
-                                pagination
-                                scopedSlots = {{
-                                    'id': 
-                                    ((item, index) => (
-                                        <td className="text-center">
-                                            {index + 1}
-                                        </td>
-                                    )), 
-                                    'nama_kategori':
-                                    (item => (
-                                        <td className="text-center">
-                                            {item.nama_kategori}
-                                        </td>
-                                    )),
-                                    'show_details':
-                                    (item, index)=>{
-                                        return (
-                                        <td className="py-2">
-                                            <CButton
-                                                color="primary"
-                                                variant="outline"
-                                                shape="square"
-                                                size="sm"
-                                                onClick={()=>{toggleDetails(index)}}
-                                            >
-                                                {details.includes(index) ? 'Hide' : 'Show'}
-                                            </CButton>
-                                        </td>
-                                        )
-                                    },
-                                    'details':
-                                        (item, index)=>{
-                                        return (
-                                        <CCollapse show={details.includes(index)}>
-                                            <CCardBody>
-                                                <CButton size="sm" color="info" onClick={() => getDataKategoriById(item.id, 'view')}>
-                                                    View Details
-                                                </CButton>
-                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataKategoriById(item.id, 'update')}>
-                                                    Update
-                                                </CButton>
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataKategoriById(item.id, 'delete')}>
-                                                    Delete
-                                                </CButton>         
-                                            </CCardBody>
-                                        </CCollapse>
-                                        )
-                                    }
-                                }}
+                                dataKategori={dataKategori}
+                                loadDataKategori={loadDataKategori}
+                                details={details}
+                                toggleDetails={toggleDetails}
+                                getDataKategoriById={getDataKategoriById}
                             />
                         </CCardBody>
                     </CCard>
@@ -130,30 +68,17 @@ const KategoriBarang = () => {
             </CRow>
 
             {/* add, edit data */}
-            <CModal 
-                show={success} 
-                onClose={() => closeModalHandler(buttonSubmitName.toLowerCase())}
+            <ModalKategoriBarang 
+                success={success}
+                input={input}
+                modalTitle={modalTitle}
+                buttonSubmitName={buttonSubmitName}
+                buttonVisibility={buttonVisibility}
                 color={color}
-                closeOnBackdrop={false}
-            >
-                <CModalHeader closeButton>
-                    <CModalTitle>{modalTitle}</CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                    <CForm action="" method="post">
-                        <CRow>
-                            <CCol xs="12" md="12">
-                                <CLabel htmlFor="kategori">Kategori</CLabel>
-                                <CInput type="text" name="nama_kategori" id="kategori" value={input.nama_kategori} onChange={changeHandler} placeholder="Masukkan Kategori" />
-                            </CCol>
-                        </CRow>
-                    </CForm>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton color="success" className={buttonVisibility} onClick={() => submitHandler(buttonSubmitName.toLocaleLowerCase())}>{buttonSubmitName}</CButton>{' '}
-                    <CButton color="secondary" className={buttonVisibility} onClick={() => closeModalHandler(buttonSubmitName.toLocaleLowerCase())}>Cancel</CButton>
-                </CModalFooter>
-            </CModal>
+                changeHandler={changeHandler}
+                closeModalHandler={closeModalHandler}
+                submitHandler={submitHandler}
+            />
         </>
     )
 }

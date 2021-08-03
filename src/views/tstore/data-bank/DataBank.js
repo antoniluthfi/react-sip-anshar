@@ -1,47 +1,43 @@
 import React, { useEffect } from 'react';
 import DataBankHelper from './modules/DataBankHelper';
+import TableBank from './modules/Table';
+import ModalBank from './modules/Modal';
 import {
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CDataTable,
     CRow,
     CButton,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CForm,
-    CFormGroup,
-    CLabel,
-    CInput,
-    CModalFooter,
-    CCollapse,
 } from '@coreui/react';  
 
 const DataBank = () => {
     const {
+        success, setSuccess,
         fields,
-        success,
-        dataBank, setSuccess,
-        loadDataBank,
+        dataBank, setDataBank,
+        loadDataBank, setLoadDataBank,
+        details,
+        toggleDetails,
+        getDataBankById,
         modalTitle,
         buttonSubmitName,
         formDisabled,
         color,
         input,
-        details,
-        toggleDetails,
         changeHandler,
         submitHandler,
         closeModalHandler,
         getDataBank,
-        getDataBankById
     } = DataBankHelper();
 
     useEffect(() => {
         getDataBank();
+
+        return () => {
+            setDataBank([]);
+            setLoadDataBank(true);
+        }
     }, [])
 
     return (
@@ -56,60 +52,13 @@ const DataBank = () => {
                             </CCol>
                         </CRow>
                         <CCardBody>
-                            <CDataTable
-                                items={dataBank}
+                            <TableBank
                                 fields={fields}
-                                striped
-                                sorter
-                                hover
-                                tableFilter
-                                noItemsView={loadDataBank ? {noItems: 'Get data'} : {noResults: 'Not found', noItems: 'Empty'}}
-                                loading={loadDataBank}    
-                                itemsPerPageSelect
-                                itemsPerPage={5}
-                                pagination
-                                scopedSlots = {{
-                                    'id': 
-                                    ((item, i) => <td className="text-center">{i + 1}</td>),
-                                    'nama_bank':
-                                    (item => <td className="text-center">{item.nama_bank}</td>),
-                                    'norekening':
-                                    (item => <td className="text-center">{item.norekening}</td>),
-                                    'show_details':
-                                    (item, index)=>{
-                                        return (
-                                        <td className="py-2">
-                                            <CButton
-                                                color="primary"
-                                                variant="outline"
-                                                shape="square"
-                                                size="sm"
-                                                onClick={()=>{toggleDetails(index)}}
-                                            >
-                                                {details.includes(index) ? 'Hide' : 'Show'}
-                                            </CButton>
-                                        </td>
-                                        )
-                                    },
-                                    'details':
-                                        (item, index)=>{
-                                        return (
-                                        <CCollapse show={details.includes(index)}>
-                                            <CCardBody>
-                                                <CButton size="sm" color="info" onClick={() => getDataBankById(item.id, 'view')}>
-                                                    View Details
-                                                </CButton>
-                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataBankById(item.id, 'update')}>
-                                                    Update
-                                                </CButton>
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataBankById(item.id, 'delete')}>
-                                                    Delete
-                                                </CButton>         
-                                            </CCardBody>
-                                        </CCollapse>
-                                        )
-                                    }
-                                }}
+                                dataBank={dataBank}
+                                loadDataBank={loadDataBank}
+                                details={details}
+                                toggleDetails={toggleDetails}
+                                getDataBankById={getDataBankById}
                             />
                         </CCardBody>
                     </CCard>
@@ -117,38 +66,17 @@ const DataBank = () => {
             </CRow>
 
             {/* add, edit data */}
-            <CModal 
-                show={success} 
-                onClose={closeModalHandler}
+            <ModalBank
+                success={success}
+                modalTitle={modalTitle}
+                buttonSubmitName={buttonSubmitName}
+                formDisabled={formDisabled}
                 color={color}
-                closeOnBackdrop={false}
-            >
-                <CModalHeader closeButton>
-                    <CModalTitle>{modalTitle}</CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                    <CForm action="" method="post">
-                        <CRow>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="nama-bank">Nama Bank</CLabel>
-                                    <CInput type="text" name="nama_bank" id="nama-bank" value={input.nama_bank} onChange={changeHandler} placeholder="Masukkan Nama Bank" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="norekening">Nomor Rekening</CLabel>
-                                    <CInput type="text" name="norekening" id="norekening" value={input.norekening} onChange={changeHandler} placeholder="Masukkan Nomor Rekening" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-                    </CForm>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton color="success" onClick={() => submitHandler(buttonSubmitName.toLowerCase())}>{buttonSubmitName}</CButton>{' '}
-                    <CButton color="secondary" onClick={closeModalHandler}>Cancel</CButton>
-                </CModalFooter>
-            </CModal>
+                input={input}          
+                changeHandler={changeHandler}
+                submitHandler={submitHandler}
+                closeModalHandler={closeModalHandler}        
+            />
         </>
     )
 }

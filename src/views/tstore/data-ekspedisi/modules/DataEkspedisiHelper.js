@@ -228,9 +228,9 @@ const DataEkspedisiHelper = () => {
     return {
         fields,
         success, setSuccess, 
-        dataEkspedisi,
-        loadDataEkspedisi,
-        currentDataEkspedisi,
+        dataEkspedisi, setDataEkspedisi,
+        loadDataEkspedisi, setLoadDataEkspedisi,
+        currentDataEkspedisi, 
         loadCurrentDataEkspedisi,
         modalTitle,
         buttonSubmitName,

@@ -1,24 +1,14 @@
 import React, { useEffect } from 'react';
-import MarketingHelper from './modules/MarketingHelper';
+import MarketingHelper from './modules/data-marketing/MarketingHelper';
+import TableMarketing from './modules/data-marketing/Table';
+import ModalMarketing from './modules/data-marketing/Modal';
 import {
     CCard,
     CCardBody,
     CCardHeader,
     CCol,
-    CDataTable,
     CRow,
     CButton,
-    CModal,
-    CModalHeader,
-    CModalTitle,
-    CModalBody,
-    CForm,
-    CFormGroup,
-    CLabel,
-    CInput,
-    CModalFooter,
-    CCollapse,
-    CSelect
 } from '@coreui/react';  
 
 const Marketing = () => {
@@ -29,10 +19,10 @@ const Marketing = () => {
         buttonSubmitName,
         buttonVisibility,
         modalTitle,
-        dataUser,
-        loadDataUser,
-        dataCabang,
-        loadDataCabang,
+        dataUser, setDataUser,
+        loadDataUser, setLoadDataUser,
+        dataCabang, setDataCabang,
+        loadDataCabang, setLoadDataCabang,
         formDisabled,
         input,
         details,
@@ -46,6 +36,13 @@ const Marketing = () => {
 
     useEffect(() => {
         getDataUser();
+
+        return () => {
+            setDataUser([]);
+            setLoadDataUser(true);
+            setDataCabang([]);
+            setLoadDataCabang(true);
+        }
     }, [])
 
     return (
@@ -60,60 +57,13 @@ const Marketing = () => {
                             </CCol>
                         </CRow>
                         <CCardBody>
-                            <CDataTable
-                                items={dataUser}
+                            <TableMarketing 
                                 fields={fields}
-                                striped
-                                sorter
-                                hover
-                                tableFilter
-                                noItemsView={loadDataUser ? {noItems: 'Get data'} : {noResults: 'Not found', noItems: 'Empty'}}
-                                loading={loadDataUser}    
-                                itemsPerPageSelect
-                                itemsPerPage={5}
-                                pagination
-                                scopedSlots = {{
-                                    'id': 
-                                    ((item, i) => (
-                                        <td className="text-center">{i + 1}</td>
-                                    )),
-                                    'nama_cabang':
-                                    (item => <td className="text-center">{item.cabang.nama_cabang}</td>),
-                                    'show_details':
-                                    (item, index)=>{
-                                        return (
-                                        <td className="py-2">
-                                            <CButton
-                                                color="primary"
-                                                variant="outline"
-                                                shape="square"
-                                                size="sm"
-                                                onClick={()=>{toggleDetails(index)}}
-                                            >
-                                                {details.includes(index) ? 'Hide' : 'Show'}
-                                            </CButton>
-                                        </td>
-                                        )
-                                    },
-                                    'details':
-                                        (item, index)=>{
-                                        return (
-                                        <CCollapse show={details.includes(index)}>
-                                            <CCardBody>
-                                                <CButton size="sm" color="info" onClick={() => getDataUserById(item.id, 'view')}>
-                                                    View Details
-                                                </CButton>
-                                                <CButton size="sm" color="success" className="ml-1" onClick={() => getDataUserById(item.id, 'update')}>
-                                                    Update
-                                                </CButton>
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => getDataUserById(item.id, 'delete')}>
-                                                    Delete
-                                                </CButton>         
-                                            </CCardBody>
-                                        </CCollapse>
-                                        )
-                                    }
-                                }}
+                                dataUser={dataUser}
+                                loadDataUser={loadDataUser}
+                                details={details}
+                                toggleDetails={toggleDetails}
+                                getDataUserById={getDataUserById}
                             />
                         </CCardBody>
                     </CCard>
@@ -121,73 +71,20 @@ const Marketing = () => {
             </CRow>
 
             {/* add, edit data */}
-            <CModal 
-                show={success} 
-                onClose={closeModalHandler}
+            <ModalMarketing 
+                success={success}
                 color={color}
-                closeOnBackdrop={false}
-            >
-                <CModalHeader closeButton>
-                    <CModalTitle>{modalTitle}</CModalTitle>
-                </CModalHeader>
-                <CModalBody>
-                    <CForm action="" method="post">
-                        <CRow>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="name">Nama</CLabel>
-                                    <CInput type="text" id="name" name="name" value={input.name} onChange={changeHandler} placeholder="Masukkan Nama" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" md="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="alamat">Alamat</CLabel>
-                                    <CInput type="text" id="alamat" name="alamat" value={input.alamat} onChange={changeHandler} placeholder="Masukkan Alamat" disabled={formDisabled} />
-                                </CFormGroup>
-
-                            </CCol>
-                        </CRow>
-
-                        <CRow>
-                            <CCol xs="12" lg="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="email">Email</CLabel>
-                                    <CInput type="email" id="email" name="email" value={input.email} onChange={changeHandler} placeholder="Masukkan Email" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                            <CCol xs="12" lg="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="nomorhp">Nomor HP</CLabel>
-                                    <CInput type="text" id="nomorhp" name="nomorhp" value={input.nomorhp} onChange={changeHandler} placeholder="Masukkan Nomor HP" disabled={formDisabled} />
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-
-                        <CRow>
-                            <CCol xs="12" lg="6">
-                                <CFormGroup>
-                                    <CLabel htmlFor="cab-penempatan">Cabang Penempatan</CLabel>
-                                    <CSelect custom name="id_cabang" id="cab-penempatan" value={input.id_cabang} onChange={changeHandler} disabled={formDisabled} >
-                                        {
-                                            loadDataCabang ? <option value="">Pilih Salah Satu</option> :
-                                            <>
-                                            <option value="">Pilih Salah Satu</option>
-                                            {dataCabang.map(item => (
-                                                <option key={item.id} value={item.id}>{item.nama_cabang}</option>
-                                            ))}
-                                            </>
-                                        }
-                                    </CSelect>
-                                </CFormGroup>
-                            </CCol>
-                        </CRow>
-                    </CForm>
-                </CModalBody>
-                <CModalFooter>
-                    <CButton color="success" className={buttonVisibility} onClick={() => submitHandler(buttonSubmitName.toLocaleLowerCase())}>{buttonSubmitName}</CButton>{' '}
-                    <CButton color="secondary" className={buttonVisibility} onClick={closeModalHandler}>Cancel</CButton>
-                </CModalFooter>
-            </CModal>
+                buttonSubmitName={buttonSubmitName}
+                buttonVisibility={buttonVisibility}
+                modalTitle={modalTitle}
+                dataCabang={dataCabang}
+                loadDataCabang={loadDataCabang}
+                formDisabled={formDisabled}
+                input={input}
+                closeModalHandler={closeModalHandler}
+                changeHandler={changeHandler}
+                submitHandler={submitHandler}
+            />
         </>
     )
 }

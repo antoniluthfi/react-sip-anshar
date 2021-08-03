@@ -1,12 +1,12 @@
 import { lazy } from 'react';
 
 const Dashboard = lazy(() => import('../views/tsc/dashboard/Dashboard'));
-const Pengerjaan = lazy(() => import('../views/tsc/penerimaan-barang/Pengerjaan'));
+const Pengerjaan = lazy(() => import('../views/tsc/pengerjaan/Pengerjaan'));
 
-const adminGudangRoutes = [
+const teknisiRoutes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/penerimaan-barang', name: 'Penerimaan Barang', component: Pengerjaan },
+  { path: '/pengerjaan', name: 'Pengerjaan', component: Pengerjaan },
 ];
 
-export default adminGudangRoutes;
+export default teknisiRoutes;
