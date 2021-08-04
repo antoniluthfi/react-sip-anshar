@@ -89,6 +89,15 @@ const Table = (props) => {
                 >
                   Delete
                 </CButton>
+                <a
+                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/tanda-terima-service/${item.no_service}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <CButton size="sm" color="warning" className="ml-1">
+                    Cetak Tanda Terima
+                  </CButton>
+                </a>
               </CCardBody>
             </CCollapse>
           );

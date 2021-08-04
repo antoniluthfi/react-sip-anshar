@@ -295,6 +295,21 @@ const ModalPenerimaanBarangService = (props) => {
               </CFormGroup>
             </CCol>
           </CRow>
+
+          <CRow>
+            <CCol xs="12" md="12">
+              <CFormGroup>
+                <CLabel htmlFor="kelengkapan">Kelengkapan</CLabel>
+                <CTextarea
+                  name="kelengkapan"
+                  id="kelengkapan"
+                  value={input.kelengkapan}
+                  onChange={changeHandler}
+                  disabled={formDisabled}
+                />
+              </CFormGroup>
+            </CCol>
+          </CRow>
         </CForm>
       </CModalBody>
       <CModalFooter>

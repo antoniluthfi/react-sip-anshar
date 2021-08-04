@@ -59,8 +59,14 @@ const ArusKasHelper = () => {
   const [success, setSuccess] = useState(false);
   const [view, setView] = useState(false);
   const [color, setColor] = useState("success");
+  const [warning, setWarning] = useState(false);
+  const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
+    useState("d-none");
+  const [filterCabang, setFilterCabang] = useState("d-none");
+  const [filterShift, setFilterShift] = useState("d-none");
   const [dataArusKas, setDataArusKas] = useState([]);
   const [sandiTransaksi, setSandiTransaksi] = useState([]);
+  const [dataCabang, setDataCabang] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [buttonSubmitName, setButtonSubmitName] = useState("Submit");
   const [buttonVisibility, setButtonVisibility] = useState("d-inline");
@@ -78,6 +84,13 @@ const ArusKasHelper = () => {
     status_pembayaran: "",
     keterangan: "",
   });
+  const [cetakLaporan, setCetakLaporan] = useState({
+    dari: "",
+    sampai: "",
+    cabang: "",
+    shift: "",
+  });
+
   const [details, setDetails] = useState([]);
 
   const toggleDetails = (index) => {
@@ -93,6 +106,37 @@ const ArusKasHelper = () => {
 
   const changeHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  const cetakLaporanHandler = (event) => {
+    setCetakLaporan({
+      ...cetakLaporan,
+      [event.target.name]: event.target.value,
+    });
+
+    if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-block");
+    } else if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      !event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-none");
+    }
+
+    if (event.target.name === "filter_cabang" && event.target.checked) {
+      setFilterCabang("d-block");
+    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
+      setFilterCabang("d-none");
+    }
+
+    if (event.target.name === "filter_shift" && event.target.checked) {
+      setFilterShift("d-block");
+    } else if (event.target.name === "filter_shift" && !event.target.checked) {
+      setFilterShift("d-none");
+    }
   };
 
   const closeModalHandler = () => {
@@ -122,6 +166,8 @@ const ArusKasHelper = () => {
       postArusKas();
     } else if (action === "update") {
       updateArusKas(input.id);
+    } else if (action === "CetakLaporan") {
+      getDataLaporan();
     }
   };
 
@@ -135,6 +181,22 @@ const ArusKasHelper = () => {
       })
       .then((response) => {
         setSandiTransaksi(response.data.result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getDataCabang = async () => {
+    await axios
+      .get(`${baseUrl}/cabang`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
+        },
+      })
+      .then((response) => {
+        setDataCabang(response.data.result);
       })
       .catch((error) => {
         console.log(error);
@@ -344,6 +406,41 @@ const ArusKasHelper = () => {
       });
   };
 
+  const getDataLaporan = () => {
+    let dari;
+    let sampai;
+    let cabang;
+    let shift;
+
+    if (!cetakLaporan.dari) {
+      dari = "x";
+    } else {
+      dari = cetakLaporan.dari;
+    }
+
+    if (!cetakLaporan.sampai) {
+      sampai = "x";
+    } else {
+      sampai = cetakLaporan.sampai;
+    }
+
+    if (!cetakLaporan.cabang) {
+      cabang = currentUser.id_cabang;
+    } else {
+      cabang = cetakLaporan.cabang;
+    }
+
+    if (!cetakLaporan.shift) {
+      shift = "x";
+    } else {
+      shift = cetakLaporan.shift;
+    }
+
+    window.open(
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-arus-kas/${dari}/${sampai}/${cabang}/${shift}/${currentUser.name}`
+    );
+  };
+
   return {
     currentUser,
     fields,
@@ -351,18 +448,27 @@ const ArusKasHelper = () => {
     setSuccess,
     view,
     color,
+    warning,
+    setWarning,
     dataArusKas,
     setDataArusKas,
     isLoading,
     setIsLoading,
     sandiTransaksi,
     setSandiTransaksi,
+    dataCabang,
+    setDataCabang,
     buttonSubmitName,
     buttonVisibility,
     formDisabled,
     modalTitle,
     input,
+    cetakLaporan,
+    setCetakLaporan,
     details,
+    filterLebihDariSatuHari,
+    filterCabang,
+    filterShift,
     toggleDetails,
     changeHandler,
     closeModalHandler,
@@ -370,6 +476,9 @@ const ArusKasHelper = () => {
     getArusKasById,
     submitHandler,
     getSandiTransaksi,
+    getDataLaporan,
+    getDataCabang,
+    cetakLaporanHandler,
   };
 };
 

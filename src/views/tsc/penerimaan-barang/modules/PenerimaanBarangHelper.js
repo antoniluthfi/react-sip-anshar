@@ -61,6 +61,7 @@ const PenerimaanBarangHelper = () => {
     kondisi_barang: "",
     problem: "",
     request: "",
+    kelengkapan: "",
   });
   const [currentPelanggan, setCurrentPelanggan] = useState({
     id: "",
@@ -111,6 +112,7 @@ const PenerimaanBarangHelper = () => {
       kondisi_barang: "",
       problem: "",
       request: "",
+      kelengkapan: "",
     });
     setCurrentPelanggan({
       id: "",
@@ -253,6 +255,7 @@ const PenerimaanBarangHelper = () => {
           kondisi_barang: result.kondisi_barang,
           problem: result.problem,
           request: result.request,
+          kelengkapan: result.kelengkapan,
         });
 
         setCurrentPelanggan({
@@ -373,6 +376,7 @@ const PenerimaanBarangHelper = () => {
             problem: input.problem || "-",
             request: input.request || "-",
             teknisi: currentTeknisi,
+            kelengkapan: input.kelengkapan,
           },
           {
             headers: {
@@ -408,6 +412,7 @@ const PenerimaanBarangHelper = () => {
           problem: input.problem,
           request: input.request,
           teknisi: currentTeknisi,
+          kelengkapan: input.kelengkapan,
         },
         {
           headers: {

@@ -96,6 +96,15 @@ const TablePengembalian = (props) => {
                     Reset
                   </CButton>
                 )}
+                <a
+                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/nota-service/${item.no_pengembalian}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <CButton size="sm" color="warning" className="ml-1">
+                    Cetak Nota Service
+                  </CButton>
+                </a>
               </CCardBody>
             </CCollapse>
           );
