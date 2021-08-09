@@ -68,7 +68,7 @@ const Login = () => {
                             <CCard className="text-white bg-success py-5 d-md-down-none" style={{ width: '44%' }}>
                                 <CCardBody className="text-center">
                                     <div>
-                                        <h2>APLIKASI SISTEM PENJUALAN CV. TWINCOM GROUP</h2>
+                                        <h4>APLIKASI SISTEM PENJUALAN, SERVICE DAN GRAFIK PENJUALAN DARI SEBELUM DAN SEMASA COVID CV. TWINCOM GROUP</h4>
                                         <img src="https://drive.google.com/thumbnail?id=12ubasd0uZrQ3LFlQ3Hw1mG4Q8ORLZ3Ao" alt="twincom" width="30%" height="30%" />
                                     </div>
                                 </CCardBody>

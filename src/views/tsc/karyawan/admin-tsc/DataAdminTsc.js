@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import DataAdminTscHelper from './modules/data-admin-tsc/DataAdminGudangHelper';
-import TableAdminTsc from './modules/data-admin-tsc/Table';
-import ModalAdminTsc from './modules/data-admin-tsc/Modal';
+import DataAdminTscHelper from './modules/DataAdminTscHelper';
+import TableAdminTsc from './modules/Table';
+import ModalAdminTsc from './modules/Modal';
 import {
     CCard,
     CCardBody,

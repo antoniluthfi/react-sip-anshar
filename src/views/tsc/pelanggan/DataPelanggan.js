@@ -56,7 +56,7 @@ const DataUser = () => {
                 </CButton>
 
                 <a
-                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/pelanggan/data-pelanggan/role/user`}
+                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/pelanggan/data-pelanggan2`}
                   target="_blank"
                   rel="noreferrer"
                 >

@@ -29,6 +29,12 @@ const adminTsc = [
     _children: [
       {
         _tag: "CSidebarNavItem",
+        name: "Admin TSC",
+        icon: <FontAwesomeIcon icon={faAddressCard} className="mr-2 ml-1" />,
+        to: "/master-data/admin-tsc",
+      },
+      {
+        _tag: "CSidebarNavItem",
         name: "Pelanggan",
         icon: <FontAwesomeIcon icon={faAddressCard} className="mr-2 ml-1" />,
         to: "/master-data/pelanggan",

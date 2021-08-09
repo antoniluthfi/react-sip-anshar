@@ -14,6 +14,8 @@ import {
   CLabel,
   CTextarea,
   CModalFooter,
+  CSelect,
+  CInput,
 } from "@coreui/react";
 
 const ModalPenerimaanBarangService = (props) => {
@@ -246,6 +248,59 @@ const ModalPenerimaanBarangService = (props) => {
                     }
                   }}
                   renderInput={(params) => <TextField {...params} />}
+                />
+              </CFormGroup>
+            </CCol>
+          </CRow>
+
+          <CRow>
+            <CCol xs="12" lg="12">
+              <CFormGroup>
+                <CLabel htmlFor="sn">Serial Number</CLabel>
+                <CInput
+                  type="text"
+                  id="sn"
+                  name="sn"
+                  value={input.sn}
+                  onChange={changeHandler}
+                  placeholder="Masukkan Serial Number"
+                  disabled={formDisabled}
+                />
+              </CFormGroup>
+            </CCol>
+          </CRow>
+
+          <CRow>
+            <CCol xs="12" lg="6">
+              <CFormGroup>
+                <CLabel htmlFor="data_penting">Data Penting</CLabel>
+                <CSelect
+                  custom
+                  name="data_penting"
+                  id="data_penting"
+                  value={input.data_penting}
+                  onChange={changeHandler}
+                  disabled={formDisabled}
+                >
+                  <option value="">Pilih Salah Satu</option>
+                  <option value="1">Ada</option>
+                  <option value="0">Tidak Ada</option>
+                </CSelect>
+              </CFormGroup>
+            </CCol>
+
+            <CCol xs="12" lg="6">
+              <CFormGroup>
+                <CLabel htmlFor="estimasi">Estimasi Penyelesaian</CLabel>
+                <CInput
+                  type="number"
+                  min="0"
+                  id="estimasi"
+                  name="estimasi"
+                  value={input.estimasi}
+                  onChange={changeHandler}
+                  placeholder="Masukkan Estimasi Penyelesaian"
+                  disabled={formDisabled}
                 />
               </CFormGroup>
             </CCol>

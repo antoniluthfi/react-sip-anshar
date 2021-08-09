@@ -8,6 +8,7 @@ const PengembalianBarang = lazy(() =>
   import("../views/tsc/pengembalian-barang/PengembalianBarang")
 );
 const ArusKas = lazy(() => import("../views/tsc/arus-kas/ArusKas"));
+const AdminTSC = lazy(() => import("../views/tsc/karyawan/admin-tsc/DataAdminTsc"));
 const Pelanggan = lazy(() => import("../views/tsc/pelanggan/DataPelanggan"));
 const MerekTipe = lazy(() => import("../views/tsc/merek-tipe/MerekTipe"));
 const BarangJasa = lazy(() => import("../views/tsc/barang-jasa/BarangJasa"));
@@ -20,6 +21,7 @@ const adminGudangRoutes = [
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
 
   { path: "/master-data", name: "Master Data", exact: true },
+  { path: "/master-data/admin-tsc", name: "Admin TSC", component: AdminTSC },
   { path: "/master-data/pelanggan", name: "Pelanggan", component: Pelanggan },
   { path: "/master-data/tipe", name: "Tipe", component: MerekTipe },
   {

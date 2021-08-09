@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTachometerAlt, faFileAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTachometerAlt, faFileAlt, faAddressCard } from "@fortawesome/free-solid-svg-icons";
 
 const adminGudang = [
   {
@@ -12,6 +12,12 @@ const adminGudang = [
       color: "info",
       text: "NEW",
     },
+  },
+  {
+    _tag: "CSidebarNavItem",
+    name: "Teknisi",
+    icon: <FontAwesomeIcon icon={faAddressCard} className="mr-3 ml-2" />,
+    to: "/teknisi",
   },
   {
     _tag: "CSidebarNavItem",

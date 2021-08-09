@@ -14,6 +14,7 @@ import {
   CLabel,
   CTextarea,
   CModalFooter,
+  CInput,
 } from "@coreui/react";
 
 const ModalPersiapanBarangBaru = (props) => {
@@ -201,6 +202,23 @@ const ModalPersiapanBarangBaru = (props) => {
                       }}
                     />
                   )}
+                />
+              </CFormGroup>
+            </CCol>
+          </CRow>
+
+          <CRow>
+            <CCol xs="12" lg="12">
+              <CFormGroup>
+                <CLabel htmlFor="sn">Serial Number</CLabel>
+                <CInput
+                  type="text"
+                  id="sn"
+                  name="sn"
+                  value={input.sn}
+                  onChange={changeHandler}
+                  placeholder="Masukkan Serial Number"
+                  disabled={formDisabled}
                 />
               </CFormGroup>
             </CCol>

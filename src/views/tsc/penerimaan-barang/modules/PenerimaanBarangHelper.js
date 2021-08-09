@@ -28,6 +28,11 @@ const PenerimaanBarangHelper = () => {
       _style: { textAlign: "center" },
     },
     {
+      key: "estimasi",
+      label: "Estimasi",
+      _style: { textAlign: "center" },
+    },
+    {
       key: "show_details",
       label: "",
       _style: { width: "1%" },
@@ -61,6 +66,9 @@ const PenerimaanBarangHelper = () => {
     kondisi_barang: "",
     problem: "",
     request: "",
+    data_penting: 0,
+    estimasi: "",
+    sn: "",
     kelengkapan: "",
   });
   const [currentPelanggan, setCurrentPelanggan] = useState({
@@ -112,6 +120,9 @@ const PenerimaanBarangHelper = () => {
       kondisi_barang: "",
       problem: "",
       request: "",
+      data_penting: 0,
+      estimasi: "",
+      sn: "",
       kelengkapan: "",
     });
     setCurrentPelanggan({
@@ -185,8 +196,13 @@ const PenerimaanBarangHelper = () => {
   };
 
   const getDataTipe = async (kategori) => {
+    let url = `${baseUrl}/merek-tipe/kategori/${kategori}`;
+    if (kategori === "jasa") {
+      url = `${baseUrl}/merek-tipe`;
+    }
+
     await axios
-      .get(`${baseUrl}/merek-tipe/kategori/${kategori}`, {
+      .get(url, {
         headers: {
           Accept: "Application/json",
           Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
@@ -255,6 +271,9 @@ const PenerimaanBarangHelper = () => {
           kondisi_barang: result.kondisi_barang,
           problem: result.problem,
           request: result.request,
+          data_penting: result.data_penting,
+          estimasi: result.estimasi,
+          sn: result.sn,
           kelengkapan: result.kelengkapan,
         });
 
@@ -272,6 +291,15 @@ const PenerimaanBarangHelper = () => {
           id: result.id_barang,
           nama: result.barang.nama,
         });
+
+        let teknisi = [];
+        result.teknisi_pj.map(item => {
+          teknisi.push({
+            id: item.teknisi.id,
+            name: item.teknisi.name
+          });
+        })
+        setCurrentTeknisi(teknisi);
 
         if (actionModal !== "delete") {
           if (result.jenis_penerimaan === "Penerimaan Barang Service") {
@@ -358,6 +386,11 @@ const PenerimaanBarangHelper = () => {
       !input.problem
     )
       message = "Problem harus diisi!";
+    else if (
+      (input.jenis_penerimaan === "Penerimaan Barang Service" && !input.sn) ||
+      (input.jenis_penerimaan === "Persiapan Barang Baru" && !input.sn)
+    )
+      message = "Serial number harus diisi!";
 
     if (message) {
       Swal.fire("Gagal", message, "error");
@@ -376,6 +409,9 @@ const PenerimaanBarangHelper = () => {
             problem: input.problem || "-",
             request: input.request || "-",
             teknisi: currentTeknisi,
+            data_penting: input.data_penting,
+            estimasi: input.estimasi,
+            sn: input.sn,
             kelengkapan: input.kelengkapan,
           },
           {
@@ -412,6 +448,9 @@ const PenerimaanBarangHelper = () => {
           problem: input.problem,
           request: input.request,
           teknisi: currentTeknisi,
+          data_penting: input.data_penting,
+          estimasi: input.estimasi,
+          sn: input.sn,
           kelengkapan: input.kelengkapan,
         },
         {

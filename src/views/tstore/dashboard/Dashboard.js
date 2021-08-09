@@ -1,11 +1,19 @@
-import React, { lazy } from 'react';
+import React, { lazy } from "react";
+import GrafikPenjualan from "./GrafikPenjualan.js";
+import { useSelector } from "react-redux";
 
-const WidgetsDropdown = lazy(() => import('./WidgetsDropdown.js'));
+const WidgetsDropdown = lazy(() => import("./WidgetsDropdown.js"));
 
 const Dashboard = () => {
-    return (
-        <WidgetsDropdown />
-    )
-}
+  const currentUser = useSelector((state) => state.currentUser);
 
-export default Dashboard
+  return (
+    <>
+      {currentUser && currentUser.hak_akses === "marketing" ? (
+        <WidgetsDropdown />
+      ) : null}
+      <GrafikPenjualan />
+    </>
+  );
+};
+export default Dashboard;

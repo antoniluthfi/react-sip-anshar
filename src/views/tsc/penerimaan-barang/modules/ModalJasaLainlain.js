@@ -14,6 +14,7 @@ import {
   CLabel,
   CTextarea,
   CModalFooter,
+  CInput,
 } from "@coreui/react";
 
 const ModalJasaLainlain = (props) => {
@@ -136,7 +137,11 @@ const ModalJasaLainlain = (props) => {
                         id_barang_jasa: values.id,
                       });
 
-                      getDataTipe(values.id);
+                      if(values.jenis === 'Jasa') {
+                        getDataTipe('jasa');
+                      } else {
+                        getDataTipe(values.id);
+                      }
 
                       // reset tipe barang
                       setCurrentTipe({
@@ -254,6 +259,24 @@ const ModalJasaLainlain = (props) => {
                     }
                   }}
                   renderInput={(params) => <TextField {...params} />}
+                />
+              </CFormGroup>
+            </CCol>
+          </CRow>
+
+          <CRow>
+            <CCol xs="12" lg="12">
+              <CFormGroup>
+                <CLabel htmlFor="estimasi">Estimasi Penyelesaian</CLabel>
+                <CInput
+                  type="number"
+                  min="0"
+                  id="estimasi"
+                  name="estimasi"
+                  value={input.estimasi}
+                  onChange={changeHandler}
+                  placeholder="Masukkan Estimasi Penyelesaian"
+                  disabled={formDisabled}
                 />
               </CFormGroup>
             </CCol>

@@ -41,6 +41,9 @@ const Table = (props) => {
         id_cabang: (item) => (
           <td className="text-center">{item.cabang.nama_cabang}</td>
         ),
+        estimasi: (item) => (
+          <td className="text-center">{item.estimasi} Hari</td>
+        ),
         show_details: (item, index) => {
           return (
             <td className="py-2">
