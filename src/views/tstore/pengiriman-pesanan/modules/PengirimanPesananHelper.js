@@ -374,7 +374,7 @@ const PengirimanPesananHelper = () => {
                 ? currentDataPengirimanPesanan.user.alamat
                 : input.alamat,
             ongkir: ongkir,
-            id_ekspedisi: input.ekspedisi,
+            ekspedisi: input.ekspedisi,
             keterangan: input.keterangan,
             total_harga: total_harga,
           },
