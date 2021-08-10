@@ -262,7 +262,7 @@ const PesananPenjualanHelper = () => {
     }
 
     const getDataPelanggan = async () => {
-        await axios.get(`${baseUrl}/user/data/pelanggan`, {
+        await axios.get(`${baseUrl}/user/role/pelanggan`, {
             headers: {
                 'Accept': 'Application/json',
                 'Authorization': `Bearer ${localStorage.getItem('sip-token')}`

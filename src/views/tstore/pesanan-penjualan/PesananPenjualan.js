@@ -200,6 +200,7 @@ const PesananPenjualan = () => {
                         <CRow>
                             <CCol xs="12" md="6">
                                 <CFormGroup>
+                                    {console.log(dataPelanggan)}
                                     <CLabel htmlFor="input-pelanggan">Nama Pelanggan</CLabel>
                                     <Autocomplete
                                         id="input-pelanggan"
@@ -209,7 +210,7 @@ const PesananPenjualan = () => {
                                         getOptionLabel={option => option.name}
                                         value={{ name: currentPelanggan.name }}
                                         onChange={(event, values) => {
-                                            if(values !== null) {
+                                            if(values) {
                                                 console.log(values);
                                                 setCurrentPelanggan({
                                                     ...currentPelanggan, 
@@ -309,6 +310,7 @@ const PesananPenjualan = () => {
                                                             val[i].harga_reseller = values.harga_reseller;
                                                             val[i].stok_dapat_dijual = stok_dapat_dijual.length > 0 ? stok_dapat_dijual[0].stok_dapat_dijual : 0;
                                                             val[i].harga_total = currentPelanggan.hak_akses === 'user' ? inputBarang[i].harga_user : inputBarang[i].harga_reseller;
+                                                            val[i].kuantitas = 1;
                                                             setInputBarang(val);
                                                         } else {
                                                             const val = [...inputBarang];
@@ -319,6 +321,7 @@ const PesananPenjualan = () => {
                                                             val[i].stok_dapat_dijual = '';
                                                             val[i].kuantitas = 1;
                                                             val[i].harga_total = 0;
+                                                            val[i].kuantitas = 0;
                                                             setInputBarang(val);
                                                         }                
                                                     }}
