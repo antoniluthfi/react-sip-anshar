@@ -200,7 +200,6 @@ const PesananPenjualan = () => {
                         <CRow>
                             <CCol xs="12" md="6">
                                 <CFormGroup>
-                                    {console.log(dataPelanggan)}
                                     <CLabel htmlFor="input-pelanggan">Nama Pelanggan</CLabel>
                                     <Autocomplete
                                         id="input-pelanggan"
