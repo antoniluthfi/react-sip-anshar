@@ -185,6 +185,7 @@ const PengirimanPesananHelper = () => {
         {
           destination: input.kota,
           ekspedisi: ekspedisi,
+          berat: currentDataPengirimanPesanan.pesanan_penjualan.total_berat,
         },
         {
           headers: {
@@ -235,6 +236,7 @@ const PengirimanPesananHelper = () => {
       })
       .then((response) => {
         const result = response.data.result;
+        console.log(result);
         kode_pesanan = result.kode_pesanan;
         setCurrentDataPengirimanPesanan(result);
 
