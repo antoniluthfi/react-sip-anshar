@@ -49,7 +49,6 @@ const WidgetsDropdown = () => {
     };
   }, []);
 
-  // render
   return (
     <>
       <h3>Selamat Datang {currentUser.name}</h3>

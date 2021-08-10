@@ -430,6 +430,7 @@ const PesananPenjualanHelper = () => {
           kode_pesanan: payload.kode_pesanan,
           id_marketing: currentUser.id,
           user_id: payload.user_id,
+          id_cabang: currentUser.cabang.id,
         },
         {
           headers: {
