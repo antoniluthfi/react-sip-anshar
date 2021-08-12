@@ -1,8 +1,8 @@
-import React, { lazy } from "react";
-import GrafikPenjualan from "./GrafikPenjualan.js";
+import React from "react";
+import GrafikPenjualan from "./modules/GrafikPenjualan";
+import WidgetsDropdown from "./modules/WidgetsDropdown";
+import ModalCetakLaporan from "./modules/ModalCetakLaporan";
 import { useSelector } from "react-redux";
-
-const WidgetsDropdown = lazy(() => import("./WidgetsDropdown.js"));
 
 const Dashboard = () => {
   const currentUser = useSelector((state) => state.currentUser);
@@ -13,6 +13,8 @@ const Dashboard = () => {
         <WidgetsDropdown />
       ) : null}
       <GrafikPenjualan />
+
+      <ModalCetakLaporan />
     </>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { CWidgetDropdown, CRow, CCol } from "@coreui/react";
-import ChartLineSimple from "../../charts/ChartLineSimple";
-import DashboardHelper from "./modules/DashboardHelper";
+import ChartLineSimple from "../../../charts/ChartLineSimple";
+import DashboardHelper from "./DashboardHelper";
 
 const WidgetsDropdown = () => {
   const {

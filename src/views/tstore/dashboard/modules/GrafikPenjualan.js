@@ -230,7 +230,7 @@ const GrafikPenjualan = () => (
                   </div>
                   <div className="progress-group-bars">
                     {item.detail.map((detail, i) => (
-                      <CProgress>
+                      <CProgress key={i}>
                         <CTooltip
                           content={`${
                             detail.nama_cabang

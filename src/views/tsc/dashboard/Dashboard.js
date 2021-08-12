@@ -3,6 +3,7 @@ import { CCol, CRow, CWidgetDropdown } from "@coreui/react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import ChartLineSimple from "src/views/charts/ChartLineSimple";
+import ModalCetakLaporan from "./ModalCetakLaporan";
 
 const Dashboard = () => {
   const baseUrl = process.env.REACT_APP_LARAVEL_URL;
@@ -79,6 +80,8 @@ const Dashboard = () => {
           ></CWidgetDropdown>
         </CCol>
       </CRow>
+
+      <ModalCetakLaporan />
     </>
   );
 };
