@@ -38,7 +38,6 @@ const ArusKas = () => {
     details,
     filterLebihDariSatuHari,
     filterCabang,
-    filterShift,
     toggleDetails,
     changeHandler,
     closeModalHandler,
@@ -123,7 +122,6 @@ const ArusKas = () => {
         cetakLaporan={cetakLaporan}
         filterLebihDariSatuHari={filterLebihDariSatuHari}
         filterCabang={filterCabang}
-        filterShift={filterShift}
         dataCabang={dataCabang}
         submitHandler={submitHandler}
       />

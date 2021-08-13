@@ -13,14 +13,12 @@ const DashboardHelper = () => {
   const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
     useState("d-none");
   const [filterCabang, setFilterCabang] = useState("d-none");
-  const [filterShift, setFilterShift] = useState("d-none");
   const [cetakLaporan, setCetakLaporan] = useState({
     jenis: "",
     kode: "",
     dari: "",
     sampai: "",
     cabang: "",
-    shift: "",
   });
 
   const getDataOpsi = async (jenis) => {
@@ -93,12 +91,6 @@ const DashboardHelper = () => {
     } else if (e.target.name === "filter_cabang" && !e.target.checked) {
       setFilterCabang("d-none");
     }
-
-    if (e.target.name === "filter_shift" && e.target.checked) {
-      setFilterShift("d-block");
-    } else if (e.target.name === "filter_shift" && !e.target.checked) {
-      setFilterShift("d-none");
-    }
   };
 
   const submitHandler = (action) => {
@@ -122,7 +114,6 @@ const DashboardHelper = () => {
       let dari;
       let sampai;
       let cabang;
-      let shift;
 
       if (!cetakLaporan.dari) {
         dari = "x";
@@ -142,14 +133,8 @@ const DashboardHelper = () => {
         cabang = cetakLaporan.cabang;
       }
 
-      if (!cetakLaporan.shift) {
-        shift = "x";
-      } else {
-        shift = cetakLaporan.shift;
-      }
-
       window.open(
-        `${cetakLaporanUrl}/laporan-arus-kas/${dari}/${sampai}/${cabang}/${shift}/${currentUser.name}`
+        `${cetakLaporanUrl}/laporan-arus-kas/${dari}/${sampai}/${cabang}/${currentUser.name}`
       );
     }
   };
@@ -160,7 +145,6 @@ const DashboardHelper = () => {
     setDataCabang,
     filterLebihDariSatuHari,
     filterCabang,
-    filterShift,
     cetakLaporan,
     setCetakLaporan,
     getDataCabang,

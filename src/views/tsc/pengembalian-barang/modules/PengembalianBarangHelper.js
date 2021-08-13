@@ -37,15 +37,20 @@ const PengembalianBarangHelper = () => {
   ];
 
   const [success, setSuccess] = useState(false);
+  const [warning, setWarning] = useState(false);
   const [view, setView] = useState(false);
   const [color, setColor] = useState("success");
   const [dataPengembalian, setDataPengembalian] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dataSandi, setDataSandi] = useState([]);
+  const [dataCabang, setDataCabang] = useState([]);
   const [buttonSubmitName, setButtonSubmitName] = useState("Submit");
   const [buttonVisibility, setButtonVisibility] = useState("d-inline");
   const [formDisabled, setFormDisabled] = useState(false);
   const [modalTitle, setModalTitle] = useState("Tambah Data");
+  const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
+    useState("d-none");
+  const [filterCabang, setFilterCabang] = useState("d-none");
   const [input, setInput] = useState({
     no_service: "",
     no_pengembalian: "",
@@ -55,6 +60,12 @@ const PengembalianBarangHelper = () => {
     nominal: "",
     id_sandi_transaksi: "",
   });
+  const [cetakLaporan, setCetakLaporan] = useState({
+    dari: "",
+    sampai: "",
+    cabang: "",
+  });
+
   const [details, setDetails] = useState([]);
 
   const toggleDetails = (index) => {
@@ -70,6 +81,31 @@ const PengembalianBarangHelper = () => {
 
   const changeHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  const cetakLaporanHandler = (event) => {
+    setCetakLaporan({
+      ...cetakLaporan,
+      [event.target.name]: event.target.value,
+    });
+
+    if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-block");
+    } else if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      !event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-none");
+    }
+
+    if (event.target.name === "filter_cabang" && event.target.checked) {
+      setFilterCabang("d-block");
+    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
+      setFilterCabang("d-none");
+    }
   };
 
   const closeModalHandler = () => {
@@ -94,7 +130,25 @@ const PengembalianBarangHelper = () => {
   const submitHandler = (action) => {
     if (action === "update") {
       updatePengembalian(input.no_pengembalian);
+    } else if (action === "CetakLaporan") {
+      getDataLaporan();
     }
+  };
+
+  const getDataCabang = async () => {
+    await axios
+      .get(`${baseUrl}/cabang`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
+        },
+      })
+      .then((response) => {
+        setDataCabang(response.data.result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const getSandiTransaksi = async () => {
@@ -239,11 +293,41 @@ const PengembalianBarangHelper = () => {
       });
   };
 
+  const getDataLaporan = () => {
+    let dari;
+    let sampai;
+    let cabang;
+
+    if (!cetakLaporan.dari) {
+      dari = "x";
+    } else {
+      dari = cetakLaporan.dari;
+    }
+
+    if (!cetakLaporan.sampai) {
+      sampai = "x";
+    } else {
+      sampai = cetakLaporan.sampai;
+    }
+
+    if (!cetakLaporan.cabang) {
+      cabang = currentUser.id_cabang;
+    } else {
+      cabang = cetakLaporan.cabang;
+    }
+
+    window.open(
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-pengembalian/${dari}/${sampai}/${cabang}/${currentUser.id}`
+    );
+  };
+
   return {
     currentUser,
     fields,
     success,
     setSuccess,
+    warning,
+    setWarning,
     view,
     color,
     dataPengembalian,
@@ -252,12 +336,17 @@ const PengembalianBarangHelper = () => {
     dataSandi,
     setDataSandi,
     setIsLoading,
+    dataCabang,
+    setDataCabang,
     buttonSubmitName,
     buttonVisibility,
     formDisabled,
     modalTitle,
     input,
     setInput,
+    cetakLaporan,
+    filterLebihDariSatuHari,
+    filterCabang,
     details,
     toggleDetails,
     changeHandler,
@@ -266,6 +355,8 @@ const PengembalianBarangHelper = () => {
     getDataPengembalian,
     getDataPengembalianById,
     getSandiTransaksi,
+    cetakLaporanHandler,
+    getDataCabang,
   };
 };
 

@@ -4,6 +4,7 @@ import TablePenerimaanBarang from "./modules/Table";
 import ModalPenerimaanBarangService from "./modules/ModalPenerimaanBarangService";
 import ModalPersiapanBarangBaru from "./modules/ModalPersiapanBarangBaru";
 import ModalJasaLainlain from "./modules/ModalJasaLainlain";
+import ModalCetakLaporan from "./modules/ModalCetakLaporan";
 import {
   CCard,
   CCardBody,
@@ -14,6 +15,7 @@ import {
   CDropdownMenu,
   CDropdownItem,
   CDropdownToggle,
+  CButton,
 } from "@coreui/react";
 
 const PenerimaanBarang = () => {
@@ -21,6 +23,8 @@ const PenerimaanBarang = () => {
     fields,
     success,
     setSuccess,
+    warning,
+    setWarning,
     persiapanBarangBaru,
     setPersiapanBarangBaru,
     jasaLainlain,
@@ -32,6 +36,8 @@ const PenerimaanBarang = () => {
     dataPelanggan,
     setDataPelanggan,
     dataTipe,
+    dataCabang,
+    setDataCabang,
     currentTipe,
     setCurrentTipe,
     currentPelanggan,
@@ -40,12 +46,15 @@ const PenerimaanBarang = () => {
     setDataBarangJasa,
     currentBarangJasa,
     setCurrentBarangJasa,
-    dataTeknisi, 
+    dataTeknisi,
     setDataTeknisi,
     currentTeknisi,
     setCurrentTeknisi,
     input,
     setInput,
+    cetakLaporan,
+    filterLebihDariSatuHari,
+    filterCabang,
     color,
     details,
     buttonSubmitName,
@@ -62,12 +71,15 @@ const PenerimaanBarang = () => {
     getDataTipe,
     getDataBarangJasa,
     getDataTeknisi,
+    cetakLaporanHandler,
+    getDataCabang,
   } = PenerimaanBarangHelper();
 
   useEffect(() => {
     getDataPenerimaan();
     getDataPelanggan();
     getDataTeknisi();
+    getDataCabang();
 
     return () => {
       setDataPenerimaan([]);
@@ -75,6 +87,7 @@ const PenerimaanBarang = () => {
       setDataPelanggan([]);
       setDataBarangJasa([]);
       setDataTeknisi([]);
+      setDataCabang();
     };
   }, []);
 
@@ -129,6 +142,14 @@ const PenerimaanBarang = () => {
                     </CDropdownItem>
                   </CDropdownMenu>
                 </CDropdown>
+
+                <CButton
+                  color="warning"
+                  onClick={() => setWarning(!warning)}
+                  className="ml-2"
+                >
+                  Cetak Laporan
+                </CButton>
               </CCol>
             </CRow>
             <CCardBody>
@@ -169,7 +190,7 @@ const PenerimaanBarang = () => {
         getDataTipe={getDataTipe}
         dataTeknisi={dataTeknisi}
         currentTeknisi={currentTeknisi}
-        setCurrentTeknisi={setCurrentTeknisi}    
+        setCurrentTeknisi={setCurrentTeknisi}
       />
 
       <ModalPersiapanBarangBaru
@@ -196,9 +217,9 @@ const PenerimaanBarang = () => {
         getDataTipe={getDataTipe}
         dataTeknisi={dataTeknisi}
         currentTeknisi={currentTeknisi}
-        setCurrentTeknisi={setCurrentTeknisi}    
+        setCurrentTeknisi={setCurrentTeknisi}
       />
-  
+
       <ModalJasaLainlain
         jasaLainlain={jasaLainlain}
         closeModalHandler={closeModalHandler}
@@ -223,7 +244,18 @@ const PenerimaanBarang = () => {
         getDataTipe={getDataTipe}
         dataTeknisi={dataTeknisi}
         currentTeknisi={currentTeknisi}
-        setCurrentTeknisi={setCurrentTeknisi}    
+        setCurrentTeknisi={setCurrentTeknisi}
+      />
+
+      <ModalCetakLaporan
+        warning={warning}
+        setWarning={setWarning}
+        cetakLaporanHandler={cetakLaporanHandler}
+        cetakLaporan={cetakLaporan}
+        filterLebihDariSatuHari={filterLebihDariSatuHari}
+        filterCabang={filterCabang}
+        dataCabang={dataCabang}
+        submitHandler={submitHandler}
       />
     </>
   );

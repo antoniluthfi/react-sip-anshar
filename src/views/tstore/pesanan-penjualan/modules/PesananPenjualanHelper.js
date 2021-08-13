@@ -48,6 +48,7 @@ const PesananPenjualanHelper = () => {
 
   const [success, setSuccess] = useState(false);
   const [info, setInfo] = useState(false);
+  const [warning, setWarning] = useState(false);
   const [dataPesananPenjualan, setDataPesananPenjualan] = useState([]);
   const [loadDataPesananPenjualan, setLoadDataPesananPenjualan] =
     useState(true);
@@ -67,6 +68,9 @@ const PesananPenjualanHelper = () => {
     useState("d-none");
   const [buttonSubmitName, setButtonSubmitName] = useState("Submit");
   const [modalTitle, setModalTitle] = useState("Tambah Data");
+  const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
+    useState("d-none");
+  const [filterCabang, setFilterCabang] = useState("d-none");
   const [input, setInput] = useState({
     user_id: "",
     id_cabang: "",
@@ -91,6 +95,11 @@ const PesananPenjualanHelper = () => {
   const [currentPelanggan, setCurrentPelanggan] = useState({
     name: "",
     hak_akses: "",
+  });
+  const [cetakLaporan, setCetakLaporan] = useState({
+    dari: "",
+    sampai: "",
+    cabang: "",
   });
   const [details, setDetails] = useState([]);
 
@@ -170,11 +179,38 @@ const PesananPenjualanHelper = () => {
     }
   };
 
+  const cetakLaporanHandler = (event) => {
+    setCetakLaporan({
+      ...cetakLaporan,
+      [event.target.name]: event.target.value,
+    });
+
+    if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-block");
+    } else if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      !event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-none");
+    }
+
+    if (event.target.name === "filter_cabang" && event.target.checked) {
+      setFilterCabang("d-block");
+    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
+      setFilterCabang("d-none");
+    }
+  };
+
   const submitHandler = (action) => {
     if (action === "submit") {
       postDataPesananaPenjualan();
     } else if (action === "update") {
       updateDataPesananPenjualan(currentPesananPenjualan.kode_pesanan);
+    } else if (action === "CetakLaporan") {
+      getDataLaporan();
     }
   };
 
@@ -598,12 +634,42 @@ const PesananPenjualanHelper = () => {
     setInputBarang(values);
   };
 
+  const getDataLaporan = () => {
+    let dari;
+    let sampai;
+    let cabang;
+
+    if (!cetakLaporan.dari) {
+      dari = "x";
+    } else {
+      dari = cetakLaporan.dari;
+    }
+
+    if (!cetakLaporan.sampai) {
+      sampai = "x";
+    } else {
+      sampai = cetakLaporan.sampai;
+    }
+
+    if (!cetakLaporan.cabang) {
+      cabang = currentUser.id_cabang;
+    } else {
+      cabang = cetakLaporan.cabang;
+    }
+
+    window.open(
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-pesanan-penjualan/${dari}/${sampai}/${cabang}/${currentUser.id}`
+    );
+  };
+
   return {
     fields,
     success,
     setSuccess,
     info,
     setInfo,
+    warning,
+    setWarning,
     currentUser,
     dataPesananPenjualan,
     loadDataPesananPenjualan,
@@ -618,6 +684,9 @@ const PesananPenjualanHelper = () => {
     setInput,
     inputBarang,
     setInputBarang,
+    cetakLaporan,
+    filterLebihDariSatuHari,
+    filterCabang,
     dataBarang,
     setDataBarang,
     dataSyaratPembayaran,
@@ -643,6 +712,7 @@ const PesananPenjualanHelper = () => {
     deleteDataFakturPenjualan,
     addInput,
     removeInput,
+    cetakLaporanHandler,
   };
 };
 

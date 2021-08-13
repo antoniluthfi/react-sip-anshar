@@ -2,28 +2,40 @@ import React, { useEffect } from "react";
 import ModalPengembalian from "./modules/Modal";
 import TablePengembalian from "./modules/TablePengembalian";
 import PengembalianBarangHelper from "./modules/PengembalianBarangHelper";
-import { CCard, CCardBody, CCardHeader, CCol, CRow } from "@coreui/react";
+import ModalCetakLaporan from "./modules/ModalCetakLaporan";
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCol,
+  CRow,
+} from "@coreui/react";
 
 const PengembalianBarang = () => {
   const {
-    currentUser,
     fields,
     success,
-    setSuccess,
+    warning,
+    setWarning,
     view,
     color,
     dataPengembalian,
     setDataPengembalian,
     isLoading,
-    setIsLoading,
     dataSandi,
     setDataSandi,
+    setIsLoading,
+    dataCabang,
+    setDataCabang,
     buttonSubmitName,
     buttonVisibility,
     formDisabled,
     modalTitle,
     input,
-    setInput,
+    cetakLaporan,
+    filterLebihDariSatuHari,
+    filterCabang,
     details,
     toggleDetails,
     changeHandler,
@@ -31,17 +43,21 @@ const PengembalianBarang = () => {
     submitHandler,
     getDataPengembalian,
     getDataPengembalianById,
-    getSandiTransaksi
+    getSandiTransaksi,
+    cetakLaporanHandler,
+    getDataCabang,
   } = PengembalianBarangHelper();
 
   useEffect(() => {
     getDataPengembalian();
     getSandiTransaksi();
+    getDataCabang();
 
     return () => {
       setDataPengembalian([]);
       setIsLoading(true);
       setDataSandi([]);
+      setDataCabang([]);
     };
   }, []);
 
@@ -51,6 +67,18 @@ const PengembalianBarang = () => {
         <CCol xs="12" lg="12">
           <CCard>
             <CCardHeader>Data Pengembalian</CCardHeader>
+            <CRow>
+              <CCol xs="12" lg="6">
+                <CButton
+                  color="warning"
+                  onClick={() => setWarning(!warning)}
+                  className="ml-4 mt-1"
+                >
+                  Cetak Laporan
+                </CButton>
+              </CCol>
+            </CRow>
+
             <CCardBody>
               <TablePengembalian
                 fields={fields}
@@ -78,6 +106,17 @@ const PengembalianBarang = () => {
         submitHandler={submitHandler}
         view={view}
         dataSandi={dataSandi}
+      />
+
+      <ModalCetakLaporan
+        warning={warning}
+        setWarning={setWarning}
+        cetakLaporanHandler={cetakLaporanHandler}
+        cetakLaporan={cetakLaporan}
+        filterLebihDariSatuHari={filterLebihDariSatuHari}
+        filterCabang={filterCabang}
+        dataCabang={dataCabang}
+        submitHandler={submitHandler}
       />
     </>
   );

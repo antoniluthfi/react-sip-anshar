@@ -73,22 +73,32 @@ const FakturPenjualanHelper = () => {
 
   const [success, setSuccess] = useState(false);
   const [info, setInfo] = useState(false);
+  const [warning, setWarning] = useState(false);
   const [dataFaktur, setDataFaktur] = useState([]);
   const [loadDataFaktur, setLoadDataFaktur] = useState(true);
   const [currentDataFaktur, setCurrentDataFaktur] = useState({});
   const [loadCurrentDataFaktur, setLoadCurrentDataFaktur] = useState(true);
   const [dataBank, setDataBank] = useState([]);
   const [loadDataBank, setLoadDataBank] = useState(true);
+  const [dataCabang, setDataCabang] = useState([]);
   const [buttonSubmitName, setButtonSubmitName] = useState("update");
   const [bankVisibility, setBankVisibility] = useState("d-none");
   const [terhutangVisibility, setTerhutangVisibility] = useState("d-none");
   const [nominalVisibility, setNominalVisibility] = useState("d-none");
+  const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
+    useState("d-none");
+  const [filterCabang, setFilterCabang] = useState("d-none");
   const [input, setInput] = useState({
     id_bank: "",
     metode_pembayaran: "",
     nominal: "",
     terhutang: "",
     dp: "",
+  });
+  const [cetakLaporan, setCetakLaporan] = useState({
+    dari: "",
+    sampai: "",
+    cabang: "",
   });
   const [details, setDetails] = useState([]);
 
@@ -129,6 +139,31 @@ const FakturPenjualanHelper = () => {
     }
   };
 
+  const cetakLaporanHandler = (event) => {
+    setCetakLaporan({
+      ...cetakLaporan,
+      [event.target.name]: event.target.value,
+    });
+
+    if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-block");
+    } else if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      !event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-none");
+    }
+
+    if (event.target.name === "filter_cabang" && event.target.checked) {
+      setFilterCabang("d-block");
+    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
+      setFilterCabang("d-none");
+    }
+  };
+
   const closeModalHandler = (action) => {
     if (action === "update" || action === "submit") {
       setSuccess(!success);
@@ -150,7 +185,25 @@ const FakturPenjualanHelper = () => {
       updateDataFakturPenjualan(currentDataFaktur.no_faktur);
     } else if (action === "lunasi") {
       postDataFaktur();
+    } else if (action === "CetakLaporan") {
+      getDataLaporan();
     }
+  };
+
+  const getDataCabang = async () => {
+    await axios
+      .get(`${baseUrl}/cabang`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
+        },
+      })
+      .then((response) => {
+        setDataCabang(response.data.result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const getCurrentUser = async () => {
@@ -404,10 +457,40 @@ const FakturPenjualanHelper = () => {
       });
   };
 
+  const getDataLaporan = () => {
+    let dari;
+    let sampai;
+    let cabang;
+
+    if (!cetakLaporan.dari) {
+      dari = "x";
+    } else {
+      dari = cetakLaporan.dari;
+    }
+
+    if (!cetakLaporan.sampai) {
+      sampai = "x";
+    } else {
+      sampai = cetakLaporan.sampai;
+    }
+
+    if (!cetakLaporan.cabang) {
+      cabang = currentUser.id_cabang;
+    } else {
+      cabang = cetakLaporan.cabang;
+    }
+
+    window.open(
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-faktur-penjualan/${dari}/${sampai}/${cabang}/${currentUser.id}`
+    );
+  };
+
   return {
     fields,
     success,
     info,
+    warning,
+    setWarning,
     dataFaktur,
     setDataFaktur,
     loadDataFaktur,
@@ -416,6 +499,8 @@ const FakturPenjualanHelper = () => {
     setDataBank,
     loadDataBank,
     setLoadDataBank,
+    dataCabang,
+    setDataCabang,
     currentDataFaktur,
     loadCurrentDataFaktur,
     bankVisibility,
@@ -423,6 +508,9 @@ const FakturPenjualanHelper = () => {
     nominalVisibility,
     buttonSubmitName,
     input,
+    cetakLaporan,
+    filterLebihDariSatuHari,
+    filterCabang,
     details,
     toggleDetails,
     changeHandler,
@@ -431,6 +519,8 @@ const FakturPenjualanHelper = () => {
     getCurrentUser,
     getDataFakturPenjualanById,
     getDataBank,
+    cetakLaporanHandler,
+    getDataCabang,
   };
 };
 

@@ -68,6 +68,7 @@ const PengirimanPesananHelper = () => {
 
   const [success, setSuccess] = useState(false);
   const [info, setInfo] = useState(false);
+  const [warning, setWarning] = useState(false);
   const [dataPengirimanPesanan, setDataPengirimanPesanan] = useState([]);
   const [loadDataPengirimanPesanan, setLoadDatapengirimanPesanan] =
     useState(true);
@@ -82,6 +83,10 @@ const PengirimanPesananHelper = () => {
   const [dataProvinsi, setDataProvinsi] = useState([]);
   const [dataKota, setDataKota] = useState([]);
   const [dataOngkir, setDataOngkir] = useState([]);
+  const [dataCabang, setDataCabang] = useState([]);
+  const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
+    useState("d-none");
+  const [filterCabang, setFilterCabang] = useState("d-none");
   const [input, setInput] = useState({
     id_marketing: "",
     user_id: "",
@@ -93,6 +98,11 @@ const PengirimanPesananHelper = () => {
     keterangan: "",
     provinsi: "",
     kota: "",
+  });
+  const [cetakLaporan, setCetakLaporan] = useState({
+    dari: "",
+    sampai: "",
+    cabang: "",
   });
   const [details, setDetails] = useState([]);
 
@@ -119,9 +129,36 @@ const PengirimanPesananHelper = () => {
     }
   };
 
+  const cetakLaporanHandler = (event) => {
+    setCetakLaporan({
+      ...cetakLaporan,
+      [event.target.name]: event.target.value,
+    });
+
+    if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-block");
+    } else if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      !event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-none");
+    }
+
+    if (event.target.name === "filter_cabang" && event.target.checked) {
+      setFilterCabang("d-block");
+    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
+      setFilterCabang("d-none");
+    }
+  };
+
   const submitHandler = (action) => {
     if (action === "update") {
       updateDataPengirimanPesanan(currentDataPengirimanPesanan.kode_pesanan);
+    } else if (action === "CetakLaporan") {
+      getDataLaporan();
     }
   };
 
@@ -144,6 +181,22 @@ const PengirimanPesananHelper = () => {
       provinsi: "",
       kota: "",
     });
+  };
+
+  const getDataCabang = async () => {
+    await axios
+      .get(`${baseUrl}/cabang`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
+        },
+      })
+      .then((response) => {
+        setDataCabang(response.data.result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const getDataProvinsi = async () => {
@@ -444,10 +497,40 @@ const PengirimanPesananHelper = () => {
       });
   };
 
+  const getDataLaporan = () => {
+    let dari;
+    let sampai;
+    let cabang;
+
+    if (!cetakLaporan.dari) {
+      dari = "x";
+    } else {
+      dari = cetakLaporan.dari;
+    }
+
+    if (!cetakLaporan.sampai) {
+      sampai = "x";
+    } else {
+      sampai = cetakLaporan.sampai;
+    }
+
+    if (!cetakLaporan.cabang) {
+      cabang = currentUser.id_cabang;
+    } else {
+      cabang = cetakLaporan.cabang;
+    }
+
+    window.open(
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-pengiriman-pesanan/${dari}/${sampai}/${cabang}/${currentUser.id}`
+    );
+  };
+
   return {
     fields,
     success,
     info,
+    warning,
+    setWarning,
     dataPengirimanPesanan,
     setDataPengirimanPesanan,
     loadDataPengirimanPesanan,
@@ -466,7 +549,12 @@ const PengirimanPesananHelper = () => {
     setDataKota,
     dataOngkir,
     setDataOngkir,
+    dataCabang,
+    setDataCabang,
     input,
+    cetakLaporan,
+    filterLebihDariSatuHari,
+    filterCabang,
     details,
     toggleDetails,
     changeHandler,
@@ -480,6 +568,8 @@ const PengirimanPesananHelper = () => {
     getDataProvinsi,
     getDataKota,
     getDataOngkir,
+    cetakLaporanHandler,
+    getDataCabang,
   };
 };
 

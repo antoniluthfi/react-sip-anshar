@@ -42,6 +42,7 @@ const PenerimaanBarangHelper = () => {
   ];
 
   const [success, setSuccess] = useState(false);
+  const [warning, setWarning] = useState(false);
   const [persiapanBarangBaru, setPersiapanBarangBaru] = useState(false);
   const [jasaLainlain, setJasaLainlain] = useState(false);
   const [color, setColor] = useState("success");
@@ -52,11 +53,15 @@ const PenerimaanBarangHelper = () => {
   const [dataPelanggan, setDataPelanggan] = useState([]);
   const [dataBarangJasa, setDataBarangJasa] = useState([]);
   const [dataTipe, setDataTipe] = useState([]);
+  const [dataCabang, setDataCabang] = useState([]);
   const [dataTeknisi, setDataTeknisi] = useState([]);
   const [buttonSubmitName, setButtonSubmitName] = useState("Submit");
   const [buttonVisibility, setButtonVisibility] = useState("d-inline");
   const [formDisabled, setFormDisabled] = useState(false);
   const [modalTitle, setModalTitle] = useState("Tambah Data");
+  const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
+    useState("d-none");
+  const [filterCabang, setFilterCabang] = useState("d-none");
   const [input, setInput] = useState({
     jenis_penerimaan: "",
     id_customer: "",
@@ -89,6 +94,11 @@ const PenerimaanBarangHelper = () => {
       name: "",
     },
   ]);
+  const [cetakLaporan, setCetakLaporan] = useState({
+    dari: "",
+    sampai: "",
+    cabang: "",
+  });
   const [details, setDetails] = useState([]);
 
   const toggleDetails = (index) => {
@@ -155,11 +165,38 @@ const PenerimaanBarangHelper = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
+  const cetakLaporanHandler = (event) => {
+    setCetakLaporan({
+      ...cetakLaporan,
+      [event.target.name]: event.target.value,
+    });
+
+    if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-block");
+    } else if (
+      event.target.name === "filter_lebih_dari_satuhari" &&
+      !event.target.checked
+    ) {
+      setFilterLebihDariSatuHari("d-none");
+    }
+
+    if (event.target.name === "filter_cabang" && event.target.checked) {
+      setFilterCabang("d-block");
+    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
+      setFilterCabang("d-none");
+    }
+  };
+
   const submitHandler = (action) => {
     if (action === "submit") {
       postDataPenerimaan();
     } else if (action === "update") {
       updateDataPenerimaan(currentPenerimaan.no_service);
+    } else if (action === "CetakLaporan") {
+      getDataLaporan();
     }
   };
 
@@ -173,6 +210,22 @@ const PenerimaanBarangHelper = () => {
       })
       .then((response) => {
         setDataPelanggan(response.data.result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const getDataCabang = async () => {
+    await axios
+      .get(`${baseUrl}/cabang`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
+        },
+      })
+      .then((response) => {
+        setDataCabang(response.data.result);
       })
       .catch((error) => {
         console.log(error);
@@ -293,12 +346,12 @@ const PenerimaanBarangHelper = () => {
         });
 
         let teknisi = [];
-        result.teknisi_pj.map(item => {
+        result.teknisi_pj.map((item) => {
           teknisi.push({
             id: item.teknisi.id,
-            name: item.teknisi.name
+            name: item.teknisi.name,
           });
-        })
+        });
         setCurrentTeknisi(teknisi);
 
         if (actionModal !== "delete") {
@@ -491,10 +544,40 @@ const PenerimaanBarangHelper = () => {
     closeModalHandler();
   };
 
+  const getDataLaporan = () => {
+    let dari;
+    let sampai;
+    let cabang;
+
+    if (!cetakLaporan.dari) {
+      dari = "x";
+    } else {
+      dari = cetakLaporan.dari;
+    }
+
+    if (!cetakLaporan.sampai) {
+      sampai = "x";
+    } else {
+      sampai = cetakLaporan.sampai;
+    }
+
+    if (!cetakLaporan.cabang) {
+      cabang = currentUser.id_cabang;
+    } else {
+      cabang = cetakLaporan.cabang;
+    }
+
+    window.open(
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-penerimaan/${dari}/${sampai}/${cabang}/${currentUser.id}`
+    );
+  };
+
   return {
     fields,
     success,
     setSuccess,
+    warning,
+    setWarning,
     persiapanBarangBaru,
     setPersiapanBarangBaru,
     jasaLainlain,
@@ -506,6 +589,8 @@ const PenerimaanBarangHelper = () => {
     dataPelanggan,
     setDataPelanggan,
     dataTipe,
+    dataCabang,
+    setDataCabang,
     currentTipe,
     setCurrentTipe,
     currentPelanggan,
@@ -522,6 +607,9 @@ const PenerimaanBarangHelper = () => {
     loadCurrentPenerimaan,
     input,
     setInput,
+    cetakLaporan,
+    filterLebihDariSatuHari,
+    filterCabang,
     color,
     details,
     buttonSubmitName,
@@ -538,6 +626,8 @@ const PenerimaanBarangHelper = () => {
     getDataTipe,
     getDataBarangJasa,
     getDataTeknisi,
+    cetakLaporanHandler,
+    getDataCabang,
   };
 };
 

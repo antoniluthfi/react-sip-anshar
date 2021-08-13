@@ -29,7 +29,6 @@ const ModalCetakLaporan = () => {
     setDataCabang,
     filterLebihDariSatuHari,
     filterCabang,
-    filterShift,
     cetakLaporan,
     setCetakLaporan,
     getDataCabang,
@@ -80,7 +79,7 @@ const ModalCetakLaporan = () => {
         {cetakLaporan.jenis === "arus-kas" ? (
           <>
             <CRow>
-              <CCol xs="12" md="4" className="mb-2">
+              <CCol xs="12" md="6" className="mb-2">
                 <CFormGroup variant="custom-checkbox" inline>
                   <CInputCheckbox
                     custom
@@ -97,7 +96,7 @@ const ModalCetakLaporan = () => {
                   </CLabel>
                 </CFormGroup>
               </CCol>
-              <CCol xs="12" md="4">
+              <CCol xs="12" md="6">
                 <CFormGroup variant="custom-checkbox" inline>
                   <CInputCheckbox
                     custom
@@ -108,20 +107,6 @@ const ModalCetakLaporan = () => {
                   />
                   <CLabel variant="custom-checkbox" htmlFor="filter-cabang">
                     Filter Cabang
-                  </CLabel>
-                </CFormGroup>
-              </CCol>
-              <CCol xs="12" md="4">
-                <CFormGroup variant="custom-checkbox" inline>
-                  <CInputCheckbox
-                    custom
-                    id="filter-shift"
-                    name="filter_shift"
-                    defaultChecked={false}
-                    onChange={cetakLaporanHandler}
-                  />
-                  <CLabel variant="custom-checkbox" htmlFor="filter-shift">
-                    Filter Shift
                   </CLabel>
                 </CFormGroup>
               </CCol>
@@ -178,23 +163,6 @@ const ModalCetakLaporan = () => {
                           </option>
                         ))
                       : null}
-                  </CSelect>
-                </CFormGroup>
-              </CCol>
-
-              <CCol xs="12" md="6">
-                <CFormGroup className={filterShift}>
-                  <CLabel htmlFor="shift">Shift</CLabel>
-                  <CSelect
-                    custom
-                    name="shift"
-                    id="shift"
-                    value={cetakLaporan.shift}
-                    onChange={cetakLaporanHandler}
-                  >
-                    <option value="">Pilih Salah Satu</option>
-                    <option value="0">Shift 1</option>
-                    <option value="1">Shift 2</option>
                   </CSelect>
                 </CFormGroup>
               </CCol>

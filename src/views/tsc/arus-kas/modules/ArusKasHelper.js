@@ -63,7 +63,6 @@ const ArusKasHelper = () => {
   const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
     useState("d-none");
   const [filterCabang, setFilterCabang] = useState("d-none");
-  const [filterShift, setFilterShift] = useState("d-none");
   const [dataArusKas, setDataArusKas] = useState([]);
   const [sandiTransaksi, setSandiTransaksi] = useState([]);
   const [dataCabang, setDataCabang] = useState([]);
@@ -88,7 +87,6 @@ const ArusKasHelper = () => {
     dari: "",
     sampai: "",
     cabang: "",
-    shift: "",
   });
 
   const [details, setDetails] = useState([]);
@@ -130,12 +128,6 @@ const ArusKasHelper = () => {
       setFilterCabang("d-block");
     } else if (event.target.name === "filter_cabang" && !event.target.checked) {
       setFilterCabang("d-none");
-    }
-
-    if (event.target.name === "filter_shift" && event.target.checked) {
-      setFilterShift("d-block");
-    } else if (event.target.name === "filter_shift" && !event.target.checked) {
-      setFilterShift("d-none");
     }
   };
 
@@ -410,7 +402,6 @@ const ArusKasHelper = () => {
     let dari;
     let sampai;
     let cabang;
-    let shift;
 
     if (!cetakLaporan.dari) {
       dari = "x";
@@ -430,14 +421,8 @@ const ArusKasHelper = () => {
       cabang = cetakLaporan.cabang;
     }
 
-    if (!cetakLaporan.shift) {
-      shift = "x";
-    } else {
-      shift = cetakLaporan.shift;
-    }
-
     window.open(
-      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-arus-kas/${dari}/${sampai}/${cabang}/${shift}/${currentUser.name}`
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-arus-kas/${dari}/${sampai}/${cabang}/${currentUser.name}`
     );
   };
 
@@ -468,7 +453,6 @@ const ArusKasHelper = () => {
     details,
     filterLebihDariSatuHari,
     filterCabang,
-    filterShift,
     toggleDetails,
     changeHandler,
     closeModalHandler,
