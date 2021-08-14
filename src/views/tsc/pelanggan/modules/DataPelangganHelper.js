@@ -209,7 +209,7 @@ const DataUserHelper = () => {
           name: input.name,
           email: input.email,
           nomorhp: input.nomorhp,
-          hak_akses: "pelanggan",
+          hak_akses: "user",
           alamat: input.alamat,
           id_cabang: 1,
           password: input.name,
