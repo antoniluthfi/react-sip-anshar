@@ -241,33 +241,42 @@ const PengembalianBarangHelper = () => {
   };
 
   const updatePengembalian = async (no_pengembalian) => {
-    await axios
-      .put(
-        `${baseUrl}/pengembalian/${no_pengembalian}`,
-        {
-          id_sandi_transaksi: input.id_sandi_transaksi,
-          status_pengembalian: input.status_pengembalian,
-          id_admin: currentUser.id,
-          id_cabang: currentUser.cabang.id,
-          nominal: input.nominal,
-          masuk: 1,
-        },
-        {
-          headers: {
-            Accept: "Application/json",
-            Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
-          },
-        }
-      )
-      .then((response) => {
-        Swal.fire("Berhasil", response.data.message, "success");
-        getDataPengembalian();
-      })
-      .catch((error) => {
-        Swal.fire("Gagal", error.response.data.message, "error");
-      });
+    let message = null;
 
-    closeModalHandler();
+    if(!input.status_pengembalian) message = 'Status pengembalian harus dipilih salah satu!';
+    else if(!input.id_sandi_transaksi) message = 'Sandi transaksi harus dipilih salah satu!';
+
+    if(message) {
+      Swal.fire("Gagal", message, "error");
+    } else {
+      await axios
+        .put(
+          `${baseUrl}/pengembalian/${no_pengembalian}`,
+          {
+            id_sandi_transaksi: input.id_sandi_transaksi,
+            status_pengembalian: input.status_pengembalian,
+            id_admin: currentUser.id,
+            id_cabang: currentUser.cabang.id,
+            nominal: input.nominal,
+            masuk: 1,
+          },
+          {
+            headers: {
+              Accept: "Application/json",
+              Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          Swal.fire("Berhasil", response.data.message, "success");
+          getDataPengembalian();
+        })
+        .catch((error) => {
+          Swal.fire("Gagal", error.response.data.message, "error");
+        });
+  
+      closeModalHandler();
+    }
   };
 
   const resetDataPengembalian = async (no_pengembalian) => {
