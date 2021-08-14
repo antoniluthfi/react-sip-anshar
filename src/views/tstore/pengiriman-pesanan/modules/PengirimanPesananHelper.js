@@ -515,7 +515,7 @@ const PengirimanPesananHelper = () => {
     }
 
     if (!cetakLaporan.marketing) {
-      marketing = currentUser.id_marketing;
+      marketing = currentUser.id;
     } else {
       marketing = cetakLaporan.marketing;
     }
