@@ -22,8 +22,8 @@ const ModalCetakLaporan = (props) => {
     cetakLaporanHandler,
     cetakLaporan,
     filterLebihDariSatuHari,
-    filterCabang,
-    dataCabang,
+    filterMarketing,
+    dataMarketing,
     submitHandler,
   } = props;
 
@@ -60,13 +60,13 @@ const ModalCetakLaporan = (props) => {
             <CFormGroup variant="custom-checkbox" inline>
               <CInputCheckbox
                 custom
-                id="filter-cabang"
-                name="filter_cabang"
+                id="filter-marketing"
+                name="filter_marketing"
                 defaultChecked={false}
                 onChange={cetakLaporanHandler}
               />
-              <CLabel variant="custom-checkbox" htmlFor="filter-cabang">
-                Filter Cabang
+              <CLabel variant="custom-checkbox" htmlFor="filter-marketing">
+                Filter Marketing
               </CLabel>
             </CFormGroup>
           </CCol>
@@ -104,22 +104,22 @@ const ModalCetakLaporan = (props) => {
 
         <CRow>
           <CCol xs="12" md="6">
-            <CFormGroup className={filterCabang}>
-              <CLabel htmlFor="cabang">Cabang</CLabel>
+            <CFormGroup className={filterMarketing}>
+              <CLabel htmlFor="marketing">Marketing</CLabel>
               <CSelect
                 custom
-                name="cabang"
-                id="cabang"
-                value={cetakLaporan.cabang}
+                name="marketing"
+                id="marketing"
+                value={cetakLaporan.marketing}
                 onChange={cetakLaporanHandler}
               >
                 <option key="sdnjns" value="">
                   Pilih Salah Satu
                 </option>
-                {dataCabang.length > 0
-                  ? dataCabang.map((item, index) => (
+                {dataMarketing.length > 0
+                  ? dataMarketing.map((item, index) => (
                       <option key={index} value={item.id}>
-                        {item.nama_cabang}
+                        {item.name}
                       </option>
                     ))
                   : null}

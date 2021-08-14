@@ -37,12 +37,12 @@ const PengirimanPesanan = () => {
     setDataKota,
     dataOngkir,
     setDataOngkir,
-    dataCabang,
-    setDataCabang,
+    dataMarketing,
+    setDataMarketing,
     input,
     cetakLaporan,
     filterLebihDariSatuHari,
-    filterCabang,
+    filterMarketing,
     details,
     toggleDetails,
     changeHandler,
@@ -57,14 +57,14 @@ const PengirimanPesanan = () => {
     getDataKota,
     getDataOngkir,
     cetakLaporanHandler,
-    getDataCabang,
+    getDataMarketing,
   } = PengirimanPesananHelper();
 
   useEffect(() => {
     getDataPengirimanPesanan();
     getDataEkspedisi();
     getDataProvinsi();
-    getDataCabang();
+    getDataMarketing();
 
     return () => {
       setDataPengirimanPesanan([]);
@@ -76,7 +76,7 @@ const PengirimanPesanan = () => {
       setDataProvinsi([]);
       setDataKota([]);
       setDataOngkir([]);
-      setDataCabang([]);
+      setDataMarketing([]);
     };
   }, []);
 
@@ -144,8 +144,8 @@ const PengirimanPesanan = () => {
         cetakLaporanHandler={cetakLaporanHandler}
         cetakLaporan={cetakLaporan}
         filterLebihDariSatuHari={filterLebihDariSatuHari}
-        filterCabang={filterCabang}
-        dataCabang={dataCabang}
+        filterMarketing={filterMarketing}
+        dataMarketing={dataMarketing}
         submitHandler={submitHandler}
       />
     </>

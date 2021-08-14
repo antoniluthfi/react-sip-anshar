@@ -83,10 +83,10 @@ const PengirimanPesananHelper = () => {
   const [dataProvinsi, setDataProvinsi] = useState([]);
   const [dataKota, setDataKota] = useState([]);
   const [dataOngkir, setDataOngkir] = useState([]);
-  const [dataCabang, setDataCabang] = useState([]);
+  const [dataMarketing, setDataMarketing] = useState([]);
   const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
     useState("d-none");
-  const [filterCabang, setFilterCabang] = useState("d-none");
+  const [filterMarketing, setFilterMarketing] = useState("d-none");
   const [input, setInput] = useState({
     id_marketing: "",
     user_id: "",
@@ -102,7 +102,7 @@ const PengirimanPesananHelper = () => {
   const [cetakLaporan, setCetakLaporan] = useState({
     dari: "",
     sampai: "",
-    cabang: "",
+    marketing: "",
   });
   const [details, setDetails] = useState([]);
 
@@ -147,10 +147,10 @@ const PengirimanPesananHelper = () => {
       setFilterLebihDariSatuHari("d-none");
     }
 
-    if (event.target.name === "filter_cabang" && event.target.checked) {
-      setFilterCabang("d-block");
-    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
-      setFilterCabang("d-none");
+    if (event.target.name === "filter_marketing" && event.target.checked) {
+      setFilterMarketing("d-block");
+    } else if (event.target.name === "filter_marketing" && !event.target.checked) {
+      setFilterMarketing("d-none");
     }
   };
 
@@ -183,16 +183,16 @@ const PengirimanPesananHelper = () => {
     });
   };
 
-  const getDataCabang = async () => {
+  const getDataMarketing = async () => {
     await axios
-      .get(`${baseUrl}/cabang`, {
+      .get(`${baseUrl}/user/role/marketing`, {
         headers: {
           Accept: "Application/json",
           Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
         },
       })
       .then((response) => {
-        setDataCabang(response.data.result);
+        setDataMarketing(response.data.result);
       })
       .catch((error) => {
         console.log(error);
@@ -500,7 +500,7 @@ const PengirimanPesananHelper = () => {
   const getDataLaporan = () => {
     let dari;
     let sampai;
-    let cabang;
+    let marketing;
 
     if (!cetakLaporan.dari) {
       dari = "x";
@@ -514,14 +514,14 @@ const PengirimanPesananHelper = () => {
       sampai = cetakLaporan.sampai;
     }
 
-    if (!cetakLaporan.cabang) {
-      cabang = currentUser.id_cabang;
+    if (!cetakLaporan.marketing) {
+      marketing = currentUser.id_marketing;
     } else {
-      cabang = cetakLaporan.cabang;
+      marketing = cetakLaporan.marketing;
     }
 
     window.open(
-      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-pengiriman-pesanan/${dari}/${sampai}/${cabang}/${currentUser.id}`
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-pengiriman-pesanan/${dari}/${sampai}/${marketing}`
     );
   };
 
@@ -549,12 +549,12 @@ const PengirimanPesananHelper = () => {
     setDataKota,
     dataOngkir,
     setDataOngkir,
-    dataCabang,
-    setDataCabang,
+    dataMarketing,
+    setDataMarketing,
     input,
     cetakLaporan,
     filterLebihDariSatuHari,
-    filterCabang,
+    filterMarketing,
     details,
     toggleDetails,
     changeHandler,
@@ -569,7 +569,7 @@ const PengirimanPesananHelper = () => {
     getDataKota,
     getDataOngkir,
     cetakLaporanHandler,
-    getDataCabang,
+    getDataMarketing,
   };
 };
 

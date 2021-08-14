@@ -28,8 +28,8 @@ const FakturPenjualan = () => {
     setDataBank,
     loadDataBank,
     setLoadDataBank,
-    dataCabang,
-    setDataCabang,
+    dataMarketing,
+    setDataMarketing,
     currentDataFaktur,
     loadCurrentDataFaktur,
     bankVisibility,
@@ -39,7 +39,7 @@ const FakturPenjualan = () => {
     input,
     cetakLaporan,
     filterLebihDariSatuHari,
-    filterCabang,
+    filterMarketing,
     details,
     toggleDetails,
     changeHandler,
@@ -49,20 +49,20 @@ const FakturPenjualan = () => {
     getDataFakturPenjualanById,
     getDataBank,
     cetakLaporanHandler,
-    getDataCabang,
+    getDataMarketing,
   } = FakturPenjualanHelper();
 
   useEffect(() => {
     getCurrentUser();
     getDataBank();
-    getDataCabang();
+    getDataMarketing();
 
     return () => {
       setDataFaktur([]);
       setLoadDataFaktur(true);
       setDataBank([]);
       setLoadDataBank(true);
-      setDataCabang([]);
+      setDataMarketing([]);
     };
   }, []);
 
@@ -123,14 +123,15 @@ const FakturPenjualan = () => {
         closeModalHandler={closeModalHandler}
       />
 
+      {/* cetak laporan */}
       <ModalCetakLaporan
         warning={warning}
         setWarning={setWarning}
         cetakLaporanHandler={cetakLaporanHandler}
         cetakLaporan={cetakLaporan}
         filterLebihDariSatuHari={filterLebihDariSatuHari}
-        filterCabang={filterCabang}
-        dataCabang={dataCabang}
+        filterMarketing={filterMarketing}
+        dataMarketing={dataMarketing}
         submitHandler={submitHandler}
       />
     </>

@@ -80,14 +80,14 @@ const FakturPenjualanHelper = () => {
   const [loadCurrentDataFaktur, setLoadCurrentDataFaktur] = useState(true);
   const [dataBank, setDataBank] = useState([]);
   const [loadDataBank, setLoadDataBank] = useState(true);
-  const [dataCabang, setDataCabang] = useState([]);
+  const [dataMarketing, setDataMarketing] = useState([]);
   const [buttonSubmitName, setButtonSubmitName] = useState("update");
   const [bankVisibility, setBankVisibility] = useState("d-none");
   const [terhutangVisibility, setTerhutangVisibility] = useState("d-none");
   const [nominalVisibility, setNominalVisibility] = useState("d-none");
   const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
     useState("d-none");
-  const [filterCabang, setFilterCabang] = useState("d-none");
+  const [filterMarketing, setFilterMarketing] = useState("d-none");
   const [input, setInput] = useState({
     id_bank: "",
     metode_pembayaran: "",
@@ -98,7 +98,7 @@ const FakturPenjualanHelper = () => {
   const [cetakLaporan, setCetakLaporan] = useState({
     dari: "",
     sampai: "",
-    cabang: "",
+    marketing: "",
   });
   const [details, setDetails] = useState([]);
 
@@ -157,10 +157,10 @@ const FakturPenjualanHelper = () => {
       setFilterLebihDariSatuHari("d-none");
     }
 
-    if (event.target.name === "filter_cabang" && event.target.checked) {
-      setFilterCabang("d-block");
-    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
-      setFilterCabang("d-none");
+    if (event.target.name === "filter_marketing" && event.target.checked) {
+      setFilterMarketing("d-block");
+    } else if (event.target.name === "filter_marketing" && !event.target.checked) {
+      setFilterMarketing("d-none");
     }
   };
 
@@ -190,16 +190,16 @@ const FakturPenjualanHelper = () => {
     }
   };
 
-  const getDataCabang = async () => {
+  const getDataMarketing = async () => {
     await axios
-      .get(`${baseUrl}/cabang`, {
+      .get(`${baseUrl}/user/role/marketing`, {
         headers: {
           Accept: "Application/json",
           Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
         },
       })
       .then((response) => {
-        setDataCabang(response.data.result);
+        setDataMarketing(response.data.result);
       })
       .catch((error) => {
         console.log(error);
@@ -460,7 +460,7 @@ const FakturPenjualanHelper = () => {
   const getDataLaporan = () => {
     let dari;
     let sampai;
-    let cabang;
+    let marketing;
 
     if (!cetakLaporan.dari) {
       dari = "x";
@@ -474,14 +474,14 @@ const FakturPenjualanHelper = () => {
       sampai = cetakLaporan.sampai;
     }
 
-    if (!cetakLaporan.cabang) {
-      cabang = currentUser.id_cabang;
+    if (!cetakLaporan.marketing) {
+      marketing = currentUser.id;
     } else {
-      cabang = cetakLaporan.cabang;
+      marketing = cetakLaporan.marketing;
     }
 
     window.open(
-      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-faktur-penjualan/${dari}/${sampai}/${cabang}/${currentUser.id}`
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-faktur-penjualan/${dari}/${sampai}/${marketing}`
     );
   };
 
@@ -499,8 +499,8 @@ const FakturPenjualanHelper = () => {
     setDataBank,
     loadDataBank,
     setLoadDataBank,
-    dataCabang,
-    setDataCabang,
+    dataMarketing,
+    setDataMarketing,
     currentDataFaktur,
     loadCurrentDataFaktur,
     bankVisibility,
@@ -510,7 +510,7 @@ const FakturPenjualanHelper = () => {
     input,
     cetakLaporan,
     filterLebihDariSatuHari,
-    filterCabang,
+    filterMarketing,
     details,
     toggleDetails,
     changeHandler,
@@ -520,7 +520,7 @@ const FakturPenjualanHelper = () => {
     getDataFakturPenjualanById,
     getDataBank,
     cetakLaporanHandler,
-    getDataCabang,
+    getDataMarketing,
   };
 };
 

@@ -59,6 +59,7 @@ const PesananPenjualanHelper = () => {
   const [dataPelanggan, setDataPelanggan] = useState([]);
   const [dataCabang, setDataCabang] = useState([]);
   const [loadDataCabang, setLoadDataCabang] = useState(true);
+  const [dataMarketing, setDataMarketing] = useState([]);
   const [dataSyaratPembayaran, setDataSyaratPembayaran] = useState([]);
   const [loadDataSyaratPembayaran, setLoadDataSyaratPembayaran] =
     useState(true);
@@ -70,7 +71,7 @@ const PesananPenjualanHelper = () => {
   const [modalTitle, setModalTitle] = useState("Tambah Data");
   const [filterLebihDariSatuHari, setFilterLebihDariSatuHari] =
     useState("d-none");
-  const [filterCabang, setFilterCabang] = useState("d-none");
+  const [filterMarketing, setFilterMarketing] = useState("d-none");
   const [input, setInput] = useState({
     user_id: "",
     id_cabang: "",
@@ -99,7 +100,7 @@ const PesananPenjualanHelper = () => {
   const [cetakLaporan, setCetakLaporan] = useState({
     dari: "",
     sampai: "",
-    cabang: "",
+    marketing: "",
   });
   const [details, setDetails] = useState([]);
 
@@ -197,10 +198,10 @@ const PesananPenjualanHelper = () => {
       setFilterLebihDariSatuHari("d-none");
     }
 
-    if (event.target.name === "filter_cabang" && event.target.checked) {
-      setFilterCabang("d-block");
-    } else if (event.target.name === "filter_cabang" && !event.target.checked) {
-      setFilterCabang("d-none");
+    if (event.target.name === "filter_marketing" && event.target.checked) {
+      setFilterMarketing("d-block");
+    } else if (event.target.name === "filter_marketing" && !event.target.checked) {
+      setFilterMarketing("d-none");
     }
   };
 
@@ -361,6 +362,22 @@ const PesananPenjualanHelper = () => {
       });
 
     setLoadDataCabang(false);
+  };
+
+  const getDataMarketing = async () => {
+    await axios
+      .get(`${baseUrl}/user/role/marketing`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
+        },
+      })
+      .then((response) => {
+        setDataMarketing(response.data.result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const getSyaratPembayaran = async () => {
@@ -637,7 +654,7 @@ const PesananPenjualanHelper = () => {
   const getDataLaporan = () => {
     let dari;
     let sampai;
-    let cabang;
+    let marketing;
 
     if (!cetakLaporan.dari) {
       dari = "x";
@@ -651,14 +668,14 @@ const PesananPenjualanHelper = () => {
       sampai = cetakLaporan.sampai;
     }
 
-    if (!cetakLaporan.cabang) {
-      cabang = currentUser.id_cabang;
+    if (!cetakLaporan.marketing) {
+      marketing = currentUser.id;
     } else {
-      cabang = cetakLaporan.cabang;
+      marketing = cetakLaporan.marketing;
     }
 
     window.open(
-      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-pesanan-penjualan/${dari}/${sampai}/${cabang}/${currentUser.id}`
+      `${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan-pesanan-penjualan/${dari}/${sampai}/${marketing}`
     );
   };
 
@@ -677,6 +694,8 @@ const PesananPenjualanHelper = () => {
     loadCurrentDataPesananPenjualan,
     dataCabang,
     loadDataCabang,
+    dataMarketing,
+    setDataMarketing,
     dataPelanggan,
     currentPelanggan,
     setCurrentPelanggan,
@@ -686,7 +705,7 @@ const PesananPenjualanHelper = () => {
     setInputBarang,
     cetakLaporan,
     filterLebihDariSatuHari,
-    filterCabang,
+    filterMarketing,
     dataBarang,
     setDataBarang,
     dataSyaratPembayaran,
@@ -704,6 +723,7 @@ const PesananPenjualanHelper = () => {
     getDataPesananPenjualanById,
     getDataStokBarang,
     getDataCabang,
+    getDataMarketing,
     getDataPelanggan,
     postDataPengirimanPesanan,
     postDataFakturPenjualan,

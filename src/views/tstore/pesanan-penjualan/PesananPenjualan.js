@@ -27,6 +27,8 @@ const PesananPenjualan = () => {
     loadCurrentDataPesananPenjualan,
     dataCabang,
     loadDataCabang,
+    dataMarketing,
+    setDataMarketing,
     dataPelanggan,
     currentPelanggan,
     setCurrentPelanggan,
@@ -36,7 +38,7 @@ const PesananPenjualan = () => {
     setInputBarang,
     cetakLaporan,
     filterLebihDariSatuHari,
-    filterCabang,
+    filterMarketing,
     dataBarang,
     setDataBarang,
     dataSyaratPembayaran,
@@ -52,6 +54,7 @@ const PesananPenjualan = () => {
     getDataPesananPenjualanById,
     getDataStokBarang,
     getDataCabang,
+    getDataMarketing,
     getDataPelanggan,
     postDataPengirimanPesanan,
     postDataFakturPenjualan,
@@ -66,11 +69,13 @@ const PesananPenjualan = () => {
   useEffect(() => {
     getCurrentUser();
     getDataCabang();
+    getDataMarketing();
     getDataPelanggan();
     getSyaratPembayaran();
 
     return () => {
       setDataBarang([]);
+      setDataMarketing([]);
     };
   }, []);
 
@@ -155,8 +160,8 @@ const PesananPenjualan = () => {
         cetakLaporanHandler={cetakLaporanHandler}
         cetakLaporan={cetakLaporan}
         filterLebihDariSatuHari={filterLebihDariSatuHari}
-        filterCabang={filterCabang}
-        dataCabang={dataCabang}
+        filterMarketing={filterMarketing}
+        dataMarketing={dataMarketing}
         submitHandler={submitHandler}
       />
     </>
