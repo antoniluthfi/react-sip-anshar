@@ -208,7 +208,7 @@ const ModalPersiapanBarangBaru = (props) => {
           </CRow>
 
           <CRow>
-            <CCol xs="12" lg="12">
+            <CCol xs="12" lg="6">
               <CFormGroup>
                 <CLabel htmlFor="sn">Serial Number</CLabel>
                 <CInput
@@ -218,6 +218,22 @@ const ModalPersiapanBarangBaru = (props) => {
                   value={input.sn}
                   onChange={changeHandler}
                   placeholder="Masukkan Serial Number"
+                  disabled={formDisabled}
+                />
+              </CFormGroup>
+            </CCol>
+
+            <CCol xs="12" lg="6">
+              <CFormGroup>
+                <CLabel htmlFor="estimasi">Estimasi Penyelesaian</CLabel>
+                <CInput
+                  type="number"
+                  min="0"
+                  id="estimasi"
+                  name="estimasi"
+                  value={input.estimasi}
+                  onChange={changeHandler}
+                  placeholder="Masukkan Estimasi Penyelesaian"
                   disabled={formDisabled}
                 />
               </CFormGroup>
