@@ -95,7 +95,9 @@ const DashboardHelper = () => {
 
   const submitHandler = (action) => {
     if (action === "pelanggan") {
-      window.open(`${cetakLaporanUrl}/laporan/pelanggan/data-pelanggan2`);
+      window.open(
+        `${cetakLaporanUrl}/laporan/pelanggan/data-pelanggan2/user/${currentUser.name}`
+      );
     } else if (action === "tts") {
       if (!cetakLaporan.kode) {
         Swal.fire("Gagal", "Nomor servis harus diisi!", "error");

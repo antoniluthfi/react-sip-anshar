@@ -1,9 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 const DataUserHelper = () => {
   const baseUrl = process.env.REACT_APP_LARAVEL_URL;
+  const currentUser = useSelector((state) => state.currentUser);
   const fields = [
     {
       key: "id",
@@ -281,6 +283,7 @@ const DataUserHelper = () => {
   };
 
   return {
+    currentUser,
     fields,
     success,
     setSuccess,

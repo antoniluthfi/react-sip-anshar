@@ -190,14 +190,16 @@ const DashboardHelper = () => {
 
   const submitHandler = (action) => {
     if (action === "stok-barang") {
-      window.open(`${cetakLaporanUrl}/laporan/barang/stok-barang`);
+      window.open(
+        `${cetakLaporanUrl}/laporan/barang/stok-barang/user/${currentUser.name}`
+      );
     } else if (action === "pelanggan-user") {
       window.open(
-        `${cetakLaporanUrl}/laporan/pelanggan/data-pelanggan/role/user`
+        `${cetakLaporanUrl}/laporan/pelanggan/data-pelanggan/role/user/user/${currentUser.name}`
       );
     } else if (action === "pelanggan-reseller") {
       window.open(
-        `${cetakLaporanUrl}/laporan/pelanggan/data-pelanggan/role/reseller`
+        `${cetakLaporanUrl}/laporan/pelanggan/data-pelanggan/role/reseller/user/${currentUser.name}`
       );
     } else if (action === "pesanan-penjualan") {
       if (!cetakLaporan.kode) {

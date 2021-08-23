@@ -326,11 +326,17 @@ const ArusKasHelper = () => {
   };
 
   const updateArusKas = async (id) => {
-    let nominal = input.nominal.replace(/[^a-z\d\s]+/gi, "");
-    nominal = nominal.split("Rp ")[1];
+    let nominal = input.nominal;
+    if (input.nominal.toString().indexOf("Rp") !== -1) {
+      nominal = input.nominal.replace(/[^a-z\d\s]+/gi, "");
+      nominal = nominal.split("Rp ")[1];
+    }
 
-    let total_biaya = input.total_biaya.replace(/[^a-z\d\s]+/gi, "");
-    total_biaya = total_biaya.split("Rp ")[1];
+    let total_biaya = input.total_biaya;
+    if (input.total_biaya.toString().indexOf("Rp") !== -1) {
+      total_biaya = input.total_biaya.replace(/[^a-z\d\s]+/gi, "");
+      total_biaya = total_biaya.split("Rp ")[1];
+    }
 
     let status_pembayaran = 0;
     if (parseInt(nominal) >= parseInt(total_biaya)) {
@@ -396,6 +402,19 @@ const ArusKasHelper = () => {
       .catch((error) => {
         Swal.fire("Gagal", error.response.data.message, "error");
       });
+
+    setInput({
+      id: "",
+      id_sandi_transaksi: "",
+      id_admin: "",
+      id_cabang: "",
+      nominal: "",
+      total_biaya: "",
+      sisa_biaya: "",
+      masuk: "",
+      status_pembayaran: "",
+      keterangan: "",
+    });
   };
 
   const getDataLaporan = () => {

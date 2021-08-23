@@ -13,6 +13,7 @@ import {
 
 const DataUser = () => {
   const {
+    currentUser,
     fields,
     success,
     setSuccess,
@@ -56,7 +57,7 @@ const DataUser = () => {
                 </CButton>
 
                 <a
-                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/pelanggan/data-pelanggan2`}
+                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/pelanggan/data-pelanggan2/user/${currentUser.name}`}
                   target="_blank"
                   rel="noreferrer"
                 >

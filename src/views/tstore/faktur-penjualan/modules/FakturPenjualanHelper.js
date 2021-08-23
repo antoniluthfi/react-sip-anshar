@@ -159,7 +159,10 @@ const FakturPenjualanHelper = () => {
 
     if (event.target.name === "filter_marketing" && event.target.checked) {
       setFilterMarketing("d-block");
-    } else if (event.target.name === "filter_marketing" && !event.target.checked) {
+    } else if (
+      event.target.name === "filter_marketing" &&
+      !event.target.checked
+    ) {
       setFilterMarketing("d-none");
     }
   };
@@ -430,21 +433,12 @@ const FakturPenjualanHelper = () => {
 
   const deleteDataFakturPenjualan = async (no_faktur) => {
     await axios
-      .put(
-        `${baseUrl}/faktur-penjualan/${no_faktur}`,
-        {
-          id_bank: "",
-          metode_pembayaran: "",
-          nominal: "",
-          terhutang: "",
+      .delete(`${baseUrl}/faktur-penjualan/${no_faktur}`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
         },
-        {
-          headers: {
-            Accept: "Application/json",
-            Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
-          },
-        }
-      )
+      })
       .then((response) => {
         getDataFakturPenjualan(
           `${baseUrl}/faktur-penjualan/marketing/${currentUser.id}`

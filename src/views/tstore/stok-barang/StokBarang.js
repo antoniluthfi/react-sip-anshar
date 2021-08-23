@@ -108,7 +108,7 @@ const StokBarang = () => {
                   </CButton>
                 ) : null}
                 <a
-                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/barang/stok-barang`}
+                  href={`${process.env.REACT_APP_LARAVEL_PUBLIC}/laporan/barang/stok-barang/user/${currentUser.name}`}
                   target="_blank"
                   rel="noreferrer"
                 >

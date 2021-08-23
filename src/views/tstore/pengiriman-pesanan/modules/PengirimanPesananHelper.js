@@ -149,7 +149,10 @@ const PengirimanPesananHelper = () => {
 
     if (event.target.name === "filter_marketing" && event.target.checked) {
       setFilterMarketing("d-block");
-    } else if (event.target.name === "filter_marketing" && !event.target.checked) {
+    } else if (
+      event.target.name === "filter_marketing" &&
+      !event.target.checked
+    ) {
       setFilterMarketing("d-none");
     }
   };
@@ -453,22 +456,12 @@ const PengirimanPesananHelper = () => {
 
   const deleteDataPengirimanPesanan = async (id) => {
     await axios
-      .put(
-        `${baseUrl}/pengiriman-pesanan/${id}`,
-        {
-          tanggal_pengiriman: "",
-          alamat: "",
-          ongkir: 0,
-          id_ekspedisi: "",
-          keterangan: "",
+      .delete(`${baseUrl}/pengiriman-pesanan/${id}`, {
+        headers: {
+          Accept: "Application/json",
+          Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
         },
-        {
-          headers: {
-            Accept: "Application/json",
-            Authorization: `Bearer ${localStorage.getItem("sip-token")}`,
-          },
-        }
-      )
+      })
       .then((response) => {
         Swal.fire("Berhasil", "Data berhasil dihapus", "success");
 
