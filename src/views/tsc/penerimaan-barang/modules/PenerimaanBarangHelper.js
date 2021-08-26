@@ -499,7 +499,7 @@ const PenerimaanBarangHelper = () => {
           id_barang: input.id_barang,
           kondisi_barang: input.kondisi_barang,
           problem: input.problem,
-          request: input.request,
+          permintaan: input.request,
           teknisi: currentTeknisi,
           data_penting: input.data_penting,
           estimasi: input.estimasi,
